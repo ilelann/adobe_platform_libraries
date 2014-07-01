@@ -8,12 +8,6 @@
 
 #include <adobe/future/widgets/headers/platform_toggle.hpp>
 
-#include <windows.h>
-#include <uxtheme.h>
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <adobe/future/windows_graphic_utils.hpp>
 #include <adobe/future/widgets/headers/button_helper.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
@@ -27,7 +21,7 @@ namespace {
 
 const adobe::toggle_t::image_type& current_image(adobe::toggle_t& toggle)
 {
-    if (::IsWindowEnabled(toggle.control_m))
+	if (adobe::get_control_enabled(toggle.control_m))
     {
         if (toggle.last_m == toggle.value_on_m)
             return toggle.image_on_m;
@@ -42,9 +36,9 @@ const adobe::toggle_t::image_type& current_image(adobe::toggle_t& toggle)
 
 /****************************************************************************************************/
 
-HBITMAP current_bitmap(adobe::toggle_t& toggle)
+adobe::native_image_resource_t current_bitmap(adobe::toggle_t& toggle)
 {
-    if (::IsWindowEnabled(toggle.control_m))
+	if (adobe::get_control_enabled(toggle.control_m))
     {
         if (toggle.last_m == toggle.value_on_m)
             return toggle.bitmap_on_m;
@@ -55,37 +49,6 @@ HBITMAP current_bitmap(adobe::toggle_t& toggle)
     {
         return toggle.bitmap_disabled_m;
     }
-}
-
-/****************************************************************************************************/
-
-LRESULT CALLBACK toggle_subclass_proc(HWND     window,
-                                      UINT     message,
-                                      WPARAM   wParam,
-                                      LPARAM   lParam,
-                                      UINT_PTR ptr,
-                                      DWORD_PTR ref)
-{
-    adobe::toggle_t& toggle(*reinterpret_cast<adobe::toggle_t*>(ptr));
-
-    if (message == WM_COMMAND && HIWORD(wParam) == STN_CLICKED)
-    {
-        if (toggle.setter_proc_m.empty())
-            return 0;
-
-        // toggle it.
-        adobe::any_regular_t new_value =
-            toggle.last_m == toggle.value_on_m ?
-                adobe::any_regular_t(adobe::empty_t()) :
-                toggle.value_on_m;
-
-        toggle.setter_proc_m(new_value);
-
-        return 0;
-    }
-
-    // nevermind.
-    return DefSubclassProc(window, message, wParam, lParam);
 }
 
 /****************************************************************************************************/
@@ -111,10 +74,26 @@ toggle_t::toggle_t(const std::string&  alt_text,
     image_off_m(image_off),
     image_disabled_m(image_disabled),
     value_on_m(value_on),
-    bitmap_on_m(to_bitmap(image_on)),
-    bitmap_off_m(to_bitmap(image_off)),
-    bitmap_disabled_m(to_bitmap(image_disabled))
+    bitmap_on_m(implementation::make_image_resource(image_on)),
+    bitmap_off_m(implementation::make_image_resource(image_off)),
+    bitmap_disabled_m(implementation::make_image_resource(image_disabled))
 { }
+
+/****************************************************************************************************/
+
+void toggle_t::on_clicked()
+{
+        if (setter_proc_m.empty())
+            return;
+
+        // toggle it.
+        adobe::any_regular_t new_value =
+            last_m == value_on_m ?
+                adobe::any_regular_t(adobe::empty_t()) :
+                value_on_m;
+
+        setter_proc_m(new_value);
+}
 
 /****************************************************************************************************/
 
@@ -143,9 +122,9 @@ void toggle_t::enable(bool make_enabled)
 {
     assert(control_m);
 
-    EnableWindow(control_m, make_enabled);
+	set_control_enabled(control_m, make_enabled);
 
-    ::SendMessage(control_m, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) current_bitmap(*this));
+    reset_image(control_m, current_bitmap(*this), false);
 }
 
 /****************************************************************************************************/
@@ -159,7 +138,7 @@ void toggle_t::display(const any_regular_t& to_value)
 
     last_m = to_value;
 
-    ::SendMessage(control_m, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) current_bitmap(*this));
+    reset_image(control_m, current_bitmap(*this), false);
 }
 
 /****************************************************************************************************/
@@ -178,23 +157,13 @@ platform_display_type insert<toggle_t>(display_t&             display,
                                        platform_display_type& parent,
                                        toggle_t&              element)
 {
-    assert(!element.control_m);
+    assert(is_null_control(element.control_m));
 
-    element.control_m = ::CreateWindowExW(  WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"STATIC",
-                                    NULL,
-                                    WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_NOTIFY,
-                                    0, 0, 100, 20,
-                                    parent,
-                                    0,
-                                    ::GetModuleHandle(NULL),
-                                    NULL);
+    element.control_m = implementation::make_toggle (parent);
 
-    if (element.control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
+    set_font_edittext(element.control_m); // REVISIT (fbrereto) : a better type?
 
-    set_font(element.control_m, EP_EDITTEXT); // REVISIT (fbrereto) : a better type?
-
-    ::SetWindowSubclass(element.control_m, &toggle_subclass_proc, reinterpret_cast<UINT_PTR>(&element), 0);
+    implementation::setup_callback_toggle(element);
 
     if (!element.alt_text_m.empty())
         implementation::set_control_alt_text(element.control_m, element.alt_text_m);

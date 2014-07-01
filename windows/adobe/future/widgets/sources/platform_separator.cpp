@@ -6,14 +6,6 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-#include <commctrl.h>
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <adobe/future/widgets/headers/platform_separator.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
 
@@ -63,24 +55,11 @@ platform_display_type insert<separator_t>(display_t&             display,
                                                  platform_display_type&  parent,
                                                  separator_t&     element)
 {
-    HWND parent_hwnd(parent);
+    assert(is_null_control(element.control_m));
 
-    assert(!element.control_m);
+    element.control_m = implementation::make_separator(parent);
 
-    element.control_m = ::CreateWindowEx(WS_EX_COMPOSITED,
-                                         WC_STATIC,
-                                         NULL,
-                                         WS_CHILD | WS_VISIBLE | SS_ETCHEDFRAME,
-                                         0, 0, 10, 10,
-                                         parent_hwnd,
-                                         0,
-                                         ::GetModuleHandle(NULL),
-                                         NULL);
-
-    if (element.control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
-
-    return display.insert(parent, element.control_m);
+	return display.insert(parent, element.control_m);
 }
 
 /****************************************************************************************************/

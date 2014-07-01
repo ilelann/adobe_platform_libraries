@@ -2,7 +2,7 @@ import testing ;
 
 project adobe/layout_tidy
     : requirements
-        <library>/adobe//asl_dev
+        <library>/adobe//asl
         <include>../../../adobe_platform_libraries/
     : default-build
         <link>static

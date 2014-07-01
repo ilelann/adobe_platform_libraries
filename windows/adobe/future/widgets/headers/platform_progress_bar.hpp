@@ -26,61 +26,30 @@ namespace adobe {
 
 /****************************************************************************************************/
 
-/*!
-\ingroup ui_core
-
-\brief Specifies the style of progress bar to be presented to the user
-
-\note
-    Could probably be refactored to specify the intention for the
-    progress bar instead of the end-look-and-feel of the progress bar.
-*/
-
-enum pb_style_t
-{
-    /// Typical progress bar intention; repeatedly updated to reflect
-    /// the progress of an ongoing task
-    pb_style_progress_bar_s,
-
-    /// Updated once (typically) to reflect an amount a certain value
-    /// relates to another value. For instance, the relevance of a
-    /// search result to the search criterion
-    pb_style_relevance_bar_s,
-
-    /// "Barber"-style animation of a bar; repeatedly animated to
-    /// reflect the fact that while we don't know how long the task
-    /// will take to complete, we can tell you that the app isn't
-    /// frozen, it's just thinking hard
-    pb_style_indeterminate_bar_s
-};
-
-/****************************************************************************************************/
-
 struct progress_bar_t : boost::noncopyable
 {
     typedef     progress_bar_t   widget_type_t;
     typedef     any_regular_t    model_type;
-    
-                progress_bar_t(pb_style_t bar_style, 
+
+                progress_bar_t(pb_style_t bar_style,
                                bool is_vertical,
                                const value_range_format_t& format,
                                unsigned long min,
                                unsigned long max,
                                theme_t theme);
-   
+
     void        measure(extents_t& result);
     void        place(const place_data_t& place_data);
 
     void        display(const any_regular_t& value);
 
-    void        initialize(HWND parent);                         
+    void        initialize(platform_display_type parent);
 
     void        set_min_value(long min_value);
     void        set_max_value(long max_value);
 
-    HWND                        control_m;
+    native_progress_bar_t                        control_m;
 
-private:
     pb_style_t                  bar_style_m;
     bool                        is_vertical_m;
 

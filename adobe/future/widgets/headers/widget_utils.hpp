@@ -62,7 +62,7 @@ namespace implementation {
 
 /**************************************************************************************************/
 
-#if ADOBE_PLATFORM_WIN || (ADOBE_PLATFORM_MAC && !defined(__LP64__))
+#if ADOBE_PLATFORM_WIDGETS_WT || ADOBE_PLATFORM_WIDGETS_WIN || (ADOBE_PLATFORM_MAC && !defined(__LP64__))
 
 /****************************************************************************************************/
 
@@ -79,7 +79,7 @@ namespace implementation {
     \param control is the platform widget that will receive the alt-text
     \param alt_text is the text to have shown when further widget description is warranted
 */
-void set_control_alt_text(platform_control_type control, const std::string& alt_text);
+void set_control_alt_text(platform_display_type control, const std::string& alt_text);
 
 /****************************************************************************************************/
 
@@ -147,7 +147,7 @@ inline void system_beep()
 {
 #if ADOBE_PLATFORM_MAC && !defined(__LP64__)
     // TODO: Beep
-#elif ADOBE_PLATFORM_WIN
+#elif ADOBE_PLATFORM_WIDGETS_WIN
     ::MessageBeep(0xFFFFFFFF);
 #endif
 }

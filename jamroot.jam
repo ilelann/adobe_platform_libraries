@@ -45,8 +45,6 @@ use-project /adobe : ../adobe_source_libraries/ ;
 # build-project since build-project cannot refer to targets, but
 # aliases have side-effect of building.
 
-alias build-asl_dev : /adobe//asl_dev ;
-
 alias build-asl : /adobe//asl ;
 
 # The build-asl target does not get built by adobe_source_libraries,
@@ -57,9 +55,9 @@ alias build-asl : /adobe//asl ;
 
 #build APL:
 alias build-wigets : /widgets ;
-build-project test/begin ;
-build-project test/layout_tidy ;
-build-project test/property_model_tidy ;
-build-project test/rset ;
-build-project test/selection_ops ;
-build-project test/xstr_test ;
+#build-project test/begin ;
+#build-project test/layout_tidy ;
+#build-project test/property_model_tidy ;
+#build-project test/rset ;
+#build-project test/selection_ops ;
+#build-project test/xstr_test ;

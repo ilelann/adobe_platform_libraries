@@ -15,6 +15,7 @@
 #include <boost/gil/color_convert.hpp>
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/image.hpp>
+#include <boost/bind.hpp>
 
 #include <adobe/algorithm/find.hpp>
 #include <adobe/poly.hpp>

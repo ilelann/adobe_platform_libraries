@@ -175,7 +175,7 @@ bool file_buffer_t::ask_for_path()
     if (result != ok_button)
         return false;
 
-#if ADOBE_PLATFORM_MAC || ADOBE_PLATFORM_WIN
+#if ADOBE_PLATFORM_MAC || ADOBE_PLATFORM_WIDGETS_WIN
     // Pick a file path dialog
 
     return implementation::pick_save_path(path_m);

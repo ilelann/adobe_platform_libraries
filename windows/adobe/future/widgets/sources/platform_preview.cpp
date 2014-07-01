@@ -64,9 +64,9 @@ void preview_t::monitor(const setter_proc_type& /*proc*/)
 /****************************************************************************************************/
 
 template <>
-platform_display_type insert<preview_t>(display_t&             display,
+platform_display_type insert<preview_t>(display_t&,
                                         platform_display_type& parent,
-                                        preview_t&             element)
+                                        preview_t&)
 {
     return parent;
 }

@@ -11,14 +11,15 @@
 
 /****************************************************************************************************/
 
-#include <windows.h>
 #include <adobe/memory.hpp>
 #include <boost/operators.hpp>
 #include <adobe/layout_attributes.hpp>
 #include <adobe/widget_attributes.hpp>
 #include <string>
 #include <boost/noncopyable.hpp>
+
 #include <adobe/future/widgets/headers/number_unit.hpp>
+#include <adobe/future/platform_primitives.hpp>
 
 /****************************************************************************************************/
 
@@ -26,7 +27,7 @@ namespace adobe {
 
 /****************************************************************************************************/
 
-struct display_number_t  : boost::noncopyable 
+struct display_number_t  : boost::noncopyable
 {
     typedef double  model_type;
 
@@ -36,13 +37,13 @@ struct display_number_t  : boost::noncopyable
     display_number_t(const std::string& name,
                      const std::string& alt_text,
                      ForwardIterator first,
-                     ForwardIterator last, 
+                     ForwardIterator last,
                      theme_t theme,
                      int characters);
 
-    HWND                     window_m;
-    WNDPROC                  default_window_proc_m;
-    RECT                     bounds_m;   
+    platform_display_type    window_m;
+    //WNDPROC                  default_window_proc_m;
+    place_data_t                     bounds_m;
     std::string              name_m;
     std::string              alt_text_m;
     unit_set_t               unit_set_m;
@@ -50,10 +51,10 @@ struct display_number_t  : boost::noncopyable
     std::wstring::size_type  label_chars_m;
     int                      characters_m;
 
-    void initialize(HWND parent);
+    void initialize(platform_display_type parent);
 
     void measure(extents_t& result);
-    void measure_vertical(extents_t& calculated_horizontal, const place_data_t& placed_horizontal);       
+    void measure_vertical(extents_t& calculated_horizontal, const place_data_t& placed_horizontal);
 
     void place(const place_data_t& place_data);
 
@@ -67,9 +68,9 @@ display_number_t::display_number_t(
              const std::string& name,
              const std::string& alt_text,
              ForwardIterator first,
-             ForwardIterator last, 
+             ForwardIterator last,
              theme_t theme,
-             int characters) 
+             int characters)
                 : name_m(name),
                   alt_text_m(alt_text),
                   unit_set_m(first, last),
@@ -80,7 +81,7 @@ display_number_t::display_number_t(
 
 /****************************************************************************************************/
 
-inline HWND get_display(const display_number_t& widget)
+inline platform_display_type get_display(const display_number_t& widget)
     { return widget.window_m; }
 
 /****************************************************************************************************/

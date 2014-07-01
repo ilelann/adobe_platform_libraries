@@ -14,7 +14,7 @@
 
 #include <utility>
 
-#if ADOBE_PLATFORM_WIN
+#if ADOBE_PLATFORM_WIDGETS_WIN
 #include <windows.h>
 #endif
 

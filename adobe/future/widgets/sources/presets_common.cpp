@@ -13,6 +13,7 @@
 
 #include <sstream>
 #include <string>
+#include <mutex>
 
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 

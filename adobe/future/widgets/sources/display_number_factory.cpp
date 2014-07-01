@@ -69,10 +69,6 @@ inline void couple_controller_to_cell(display_number_t&,
 }
 
 /****************************************************************************************************/
-
-namespace implementation {
-
-/****************************************************************************************************/
     
 widget_node_t make_display_number(const dictionary_t&     parameters, 
                                          const widget_node_t&    parent, 
@@ -85,10 +81,6 @@ widget_node_t make_display_number(const dictionary_t&     parameters,
         factory.layout_attributes("display_number"_name)); 
 }
  
-/****************************************************************************************************/
-
-} // namespace implementation
-
 /****************************************************************************************************/
 
 } // namespace adobe

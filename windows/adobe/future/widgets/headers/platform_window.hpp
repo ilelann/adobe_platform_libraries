@@ -12,9 +12,6 @@
 /****************************************************************************************************/
 
 #include <adobe/config.hpp>
-
-#include <windows.h>
-
 #include <adobe/any_regular.hpp>
 #include <adobe/eve.hpp>
 #include <adobe/extents.hpp>
@@ -52,7 +49,7 @@ struct window_t
     void set_size(const point_2d_t& size);
 
     void reposition(window_reposition_t position);
- 
+
     void monitor_resize(const window_resize_proc_t& proc);
 
     any_regular_t underlying_handler() { return any_regular_t(window_m); }
@@ -60,7 +57,7 @@ struct window_t
     bool handle_key(key_type /*key*/, bool /*pressed*/, modifiers_t /*modifiers*/)
         { return false; }
 
-    HWND                 window_m;
+    platform_display_type                 window_m;
     std::string          name_m;
     window_style_t       style_m;
     window_attributes_t  attributes_m;

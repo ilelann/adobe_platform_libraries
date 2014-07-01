@@ -48,7 +48,7 @@ void edit_number_platform_data_t::initialize()
     if (!control_m->edit_text_m.using_label_m)
         return;
 
-    HWND label(control_m->edit_text_m.name_m.window_m);
+    platform_display_type label(control_m->edit_text_m.name_m.window_m);
 
     ::SetWindowSubclass(label,
                         &edit_number_label_cursor_handler,
@@ -94,7 +94,7 @@ LRESULT edit_number_platform_data_t::label_message(UINT message, WPARAM wParam, 
 
         if (last_point_m.y != 0 && delta != 0)
         {
-            modifiers_t modifiers(modifier_state());
+			modifiers_t modifiers(implementation::modifier_state());
 
             if (modifiers & modifiers_any_shift_s)
                 delta *= 10;

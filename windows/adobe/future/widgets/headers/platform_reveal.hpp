@@ -13,9 +13,6 @@
 
 #include <adobe/config.hpp>
 
-#define WINDOWS_LEAN_AND_MEAN 1
-#include <windows.h>
-
 #include <adobe/any_regular.hpp>
 
 #include <adobe/future/widgets/headers/platform_label.hpp>
@@ -39,7 +36,7 @@ struct reveal_t : boost::noncopyable
              theme_t						theme,
              const std::string&				alt_text);
 
-    void initialize(HWND parent);
+    void initialize(platform_display_type parent);
 
     void measure(extents_t& result);
 
@@ -49,7 +46,9 @@ struct reveal_t : boost::noncopyable
 
     void monitor(const setter_type& proc);
 
-    HWND                    control_m;
+    void on_clicked();    
+
+    native_reveal_t                    control_m;
     theme_t          theme_m;
     label_t			name_m;
     bool                    using_label_m;

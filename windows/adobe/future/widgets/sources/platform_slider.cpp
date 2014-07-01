@@ -6,19 +6,11 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-#include <Commctrl.h>
-
 #include <adobe/future/widgets/headers/display.hpp>
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 #include <adobe/future/widgets/headers/platform_metrics.hpp>
 #include <adobe/future/widgets/headers/platform_slider.hpp>
-
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
+#include <adobe/future/widgets/headers/platform_widget_utils.hpp>
 
 /****************************************************************************************************/
 
@@ -26,81 +18,21 @@ namespace {
 
 /****************************************************************************************************/
 
-LRESULT CALLBACK slider_subclass_proc(HWND window, UINT message, WPARAM wParam, LPARAM lParam, UINT_PTR ptr, DWORD_PTR /* ref */)
-{
-    adobe::slider_t& control(*reinterpret_cast<adobe::slider_t*>(ptr));
-
-    assert(control.control_m);
-
-    if (control.value_proc_m.empty() == false &&
-        (message == WM_HSCROLL || message == WM_VSCROLL))
-    {
-        WORD submsg(LOWORD(wParam));
-
-        if (submsg == TB_LINEUP        || submsg == TB_LINEDOWN   ||
-            submsg == TB_PAGEUP        || submsg == TB_PAGEDOWN   ||
-            submsg == TB_THUMBPOSITION || submsg == TB_THUMBTRACK ||
-            submsg == TB_TOP           || submsg == TB_BOTTOM     ||
-            submsg == TB_ENDTRACK)
-        {
-            long   new_position(static_cast<long>(::SendMessage(window, TBM_GETPOS, 0, 0)));
-            double new_value(control.format_m.at(new_position).cast<double>());
-
-            if (new_value != control.value_m)
-            {
-                control.value_m = new_value;
-
-                control.value_proc_m(static_cast<adobe::slider_t::model_type>(control.value_m));
-            }
-        }
-    }
-
-    return ::DefSubclassProc(window, message, wParam, lParam);
-}
 
 /****************************************************************************************************/
 
-void initialize(adobe::slider_t& control, HWND parent)
+void initialize(adobe::slider_t& control, adobe::platform_display_type parent)
 {
     assert(!control.control_m);
 
-    DWORD win32_style = WS_CHILD | WS_VISIBLE | WS_TABSTOP;
+	control.control_m = adobe::implementation::make_slider (parent, control.is_vertical_m, control.num_ticks_m, control.style_m);
 
-    win32_style |= control.is_vertical_m ? TBS_VERT : TBS_HORZ;
+	if (control.is_vertical_m)
+	    adobe::set_font_thumbtop(control.control_m);
+	else
+	    adobe::set_font_thumbleft(control.control_m);
 
-    if (control.num_ticks_m)
-    {
-        switch (control.style_m)
-        {
-            case adobe::slider_points_up_s:    win32_style |= TBS_TOP;    break;
-            case adobe::slider_points_left_s:  win32_style |= TBS_LEFT;   break;
-            case adobe::slider_points_down_s:  win32_style |= TBS_BOTTOM; break;
-            case adobe::slider_points_right_s: win32_style |= TBS_RIGHT;  break;
-            default: break; // silences a GCC warning
-        }
-    }
-    else
-    {
-        win32_style |= TBS_NOTICKS;
-    }
-
-    control.control_m = ::CreateWindowEx(WS_EX_COMPOSITED,
-                                         TRACKBAR_CLASS,
-                                         NULL,
-                                         win32_style,
-                                         0, 0, 20, 20,
-                                         parent,
-                                         0,
-                                         ::GetModuleHandle(NULL),
-                                         NULL);
-
-    if (control.control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
-
-    adobe::set_font(control.control_m, control.is_vertical_m ? TKP_THUMBTOP : TKP_THUMBLEFT);
-
-    ::SetWindowSubclass(control.control_m, slider_subclass_proc, reinterpret_cast<UINT_PTR>(&control), 0);
-	::SendMessage (control.control_m, TBM_SETRANGE, FALSE, MAKELONG(0, control.format_m.size()));
+	adobe::implementation::setup_callback_slider(control);
 }
 
 /****************************************************************************************************/
@@ -112,6 +44,15 @@ void initialize(adobe::slider_t& control, HWND parent)
 namespace adobe {
 
 /****************************************************************************************************/
+
+void slider_t::on_new_value (model_type new_value)
+{
+	if (new_value != value_m)
+	{
+		value_m = new_value;
+		value_proc_m (value_m);
+	}
+}
 
 slider_t::slider_t(const std::string&          alt_text,
                    bool                        is_vertical,
@@ -132,7 +73,10 @@ slider_t::slider_t(const std::string&          alt_text,
 
 void slider_t::measure(extents_t& result)
 {
-    int theme_type(is_vertical_m ? TKP_THUMBTOP : TKP_THUMBLEFT);
+#ifdef ADOBE_PLATFORM_WIDGETS_WT
+	return;
+#else
+	int theme_type(is_vertical_m ? TKP_THUMBTOP : TKP_THUMBLEFT);
 
     //
     // Get the size of the thumb, and then multiply it by the number of tick
@@ -163,6 +107,7 @@ void slider_t::measure(extents_t& result)
 
     result.width() += 2 * border;
     result.height() += 2 * border;
+#endif
 }
 
 /****************************************************************************************************/
@@ -178,7 +123,7 @@ void slider_t::enable(bool make_enabled)
 {
     assert(control_m);
 
-    ::EnableWindow(control_m, make_enabled);
+	set_control_enabled (control_m, make_enabled);
 }
 
 /****************************************************************************************************/
@@ -193,7 +138,7 @@ void slider_t::display(const model_type& value)
     {
         last_m = new_position;
 
-        ::SendMessage(control_m, TBM_SETPOS, true, static_cast<LPARAM>(new_position)); 
+        implementation::set_slider_value(control_m, value);
     }
 }
 
@@ -202,9 +147,7 @@ void slider_t::display(const model_type& value)
 template <>
 platform_display_type insert<slider_t>(display_t& display, platform_display_type& parent, slider_t& element)
 {
-    HWND parent_hwnd(parent);
-
-    initialize(element, parent_hwnd);
+    initialize(element, parent);
 
     return display.insert(parent, element.control_m);
 }

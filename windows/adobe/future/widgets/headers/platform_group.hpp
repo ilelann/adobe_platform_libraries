@@ -12,14 +12,12 @@
 /****************************************************************************************************/
 
 #include <adobe/config.hpp>
-
-#define WINDOWS_LEAN_AND_MEAN 1
-#include <windows.h>
-
 #include <adobe/extents.hpp>
 #include <adobe/eve.hpp>
 #include <adobe/layout_attributes.hpp>
 #include <adobe/widget_attributes.hpp>
+#include <adobe/future/platform_primitives.hpp>
+
 
 #include <string>
 
@@ -39,7 +37,7 @@ struct group_t
 
     void place(const place_data_t& place_data);
 
-    HWND                 control_m;
+    native_group_t                 control_m;
     std::string          name_m;
     std::string          alt_text_m;
     theme_t       theme_m;

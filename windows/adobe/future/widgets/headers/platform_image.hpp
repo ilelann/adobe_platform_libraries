@@ -11,12 +11,10 @@
 
 /****************************************************************************************************/
 
-#include <windows.h>
-
 #include <adobe/dictionary.hpp>
-#include <adobe/future/windows_message_handler.hpp>
 #include <adobe/memory.hpp>
 #include <adobe/layout_attributes.hpp>
+#include <adobe/future/platform_primitives.hpp>
 
 #include <boost/function.hpp>
 #include <boost/gil/gil_all.hpp>
@@ -35,43 +33,41 @@ struct image_t : boost::noncopyable
     /// model types for this widget
     typedef dictionary_t                                         controller_model_type;
     typedef boost::gil::rgba8_image_t                            view_model_type;
+
     typedef boost::function<void (const controller_model_type&)> setter_proc_type;
 
     image_t(const view_model_type& image);
 
-    LRESULT handle_event(HWND window, UINT message, WPARAM wparam, LPARAM lparam, WNDPROC next_proc);
+	window_proc_t handle_event;
 
     void display(const view_model_type& value);
 
     void monitor(const setter_proc_type& proc);
     void enable(bool make_enabled);
 
-    HWND                               window_m;
+    native_image_t                     control_m;
     view_model_type                    image_m;
+    std::string                        image_path_m;
     setter_proc_type                   callback_m;
     dictionary_t                       metadata_m;
     bool                               enabled_m;
 
-    // mouse tracking stuff
-    adobe::auto_ptr<message_handler_t> handler_m;
-    HWND                               prev_capture_m;
+    platform_display_type                               prev_capture_m;
     bool                               tracking_m;
-    POINTS                             last_point_m;
+    point_t                            last_point_m;
     std::pair<long, long>              origin_m;
+
+void on_mouse_moved(const point_t & cur_point);
+void on_mouse_down(const point_t & cur_point);
+void on_mouse_up(const point_t & cur_point);
+
 };
-
-/****************************************************************************************************/
-
-void initialize(image_t& value, HWND parent);
-
-inline HWND get_display(image_t& widget)
-{ return widget.window_m; }
 
 /****************************************************************************************************/
 
 void measure(image_t& value, extents_t& result);
 
-void measure_vertical(image_t& value, extents_t& calculated_horizontal, 
+void measure_vertical(image_t& value, extents_t& calculated_horizontal,
                       const place_data_t& placed_horizontal);
 
 void place(image_t& value, const place_data_t& place_data);
@@ -96,6 +92,6 @@ struct view_model_type<adobe::image_t>
 
 /****************************************************************************************************/
 
-#endif 
+#endif
 
 /****************************************************************************************************/

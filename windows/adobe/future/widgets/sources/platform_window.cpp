@@ -15,9 +15,7 @@
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/keyboard.hpp>
 
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
 
 /****************************************************************************************************/
 
@@ -25,7 +23,7 @@ namespace {
 
 /****************************************************************************************************/
 
-std::pair<long, long> get_window_client_offsets(HWND window)
+	std::pair<long, long> get_window_client_offsets(adobe::platform_display_type window)
 {
     assert(window);
 
@@ -60,7 +58,7 @@ LRESULT CALLBACK window_event_proc(HWND window, UINT message, WPARAM wParam, LPA
     if (message == WM_SIZING)
     {
         adobe::window_t& imp(*reinterpret_cast<adobe::window_t*>(adobe::get_user_reference(window)));
-        RECT&            bounds(*hackery::cast<RECT*>(lParam));
+		RECT&            bounds(*hackery::cast<RECT*>(lParam));
 
         if (imp.debounce_m == false && imp.resize_proc_m.empty() == false)
         {
@@ -98,7 +96,7 @@ LRESULT CALLBACK window_event_proc(HWND window, UINT message, WPARAM wParam, LPA
     {
         if (adobe::keyboard_t::get().dispatch(adobe::key_type(wParam),
                                               message == WM_KEYDOWN || message == WM_SYSKEYDOWN,
-                                              adobe::modifier_state(),
+											  adobe::implementation::modifier_state(),
                                               adobe::any_regular_t(window)))
             return 0;
     }
@@ -123,6 +121,8 @@ LRESULT CALLBACK window_event_proc(HWND window, UINT message, WPARAM wParam, LPA
 
 /****************************************************************************************************/
 
+#endif
+
 namespace adobe {
 
 /****************************************************************************************************/
@@ -141,6 +141,7 @@ window_t::window_t(const std::string&  name,
     debounce_m(false),
     placed_once_m(false)
 {
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
     static bool inited(false);
 
     if (!inited)
@@ -166,14 +167,17 @@ window_t::window_t(const std::string&  name,
 
         RegisterClassW(&wc);
     }
+#endif
 }
 
 /****************************************************************************************************/
 
 window_t::~window_t()
 {
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
     if (window_m)
         ::DestroyWindow(window_m);
+#endif 
 
     window_m = 0;
 }
@@ -205,6 +209,7 @@ void window_t::place(const place_data_t& place_data)
 {
     assert(window_m);
 
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
     if (placed_once_m)
     {
         set_size(point_2d_t(width(place_data), height(place_data)));
@@ -228,6 +233,7 @@ void window_t::place(const place_data_t& place_data)
                         width(place_data) + extra.first,
                         height(place_data) + extra.second, TRUE);
     }
+#endif
 }
 
 /****************************************************************************************************/
@@ -236,6 +242,7 @@ void window_t::set_size(const point_2d_t& size)
 {
     assert(window_m);
 
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
     if (debounce_m) return;
 
     debounce_m = true;
@@ -254,6 +261,7 @@ void window_t::set_size(const point_2d_t& size)
                    SWP_NOMOVE | SWP_NOZORDER | SWP_NOOWNERZORDER );
 
     debounce_m = false;
+#endif 
 }
 
 /****************************************************************************************************/
@@ -261,13 +269,13 @@ void window_t::set_size(const point_2d_t& size)
 void window_t::reposition(window_reposition_t position)
 {
     assert(window_m);
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
 
-    RECT window_rect;
-
+	place_data_t window_rect;
     implementation::get_control_bounds(window_m, window_rect);
 
-    int width(window_rect.right - window_rect.left);
-    int height(window_rect.bottom - window_rect.top);
+    int width(width(window_rect));
+    int height(height(window_rect));
 
     int sys_met_x(::GetSystemMetrics(SM_CXFULLSCREEN));
     int sys_met_y(::GetSystemMetrics(SM_CYFULLSCREEN));
@@ -281,6 +289,7 @@ void window_t::reposition(window_reposition_t position)
         top = std::max<int>(10, static_cast<int>((sys_met_y * .6 - height)/2));
 
     ::MoveWindow(window_m, left, top, width, height, TRUE);
+#endif
 }
 
 /****************************************************************************************************/
@@ -289,12 +298,14 @@ void window_t::set_visible(bool make_visible)
 {
     assert(window_m);
 
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
     if (IsWindowVisible(window_m) == false)
         reposition(window_reposition_center_s);
 
     set_control_visible(window_m, make_visible);
 
     ::EnableWindow(window_m, make_visible);
+#endif
 }
 
 /****************************************************************************************************/
@@ -313,28 +324,15 @@ platform_display_type insert<window_t>(display_t&             display,
 {
     assert(!element.window_m);
 
-    HWND parent_hwnd(parent);
+    platform_display_type parent_hwnd(parent);
 
-    DWORD platform_style(WS_OVERLAPPED | WS_CAPTION | WS_BORDER/* | WS_SYSMENU*/);
-    DWORD dialog_extended_style = WS_EX_WINDOWEDGE | WS_EX_DLGMODALFRAME | WS_EX_COMPOSITED;
-
-    if (element.attributes_m & (window_attributes_resizeable_s | window_attributes_live_resizeable_s))
-        platform_style |= WS_SIZEBOX;
-
-    element.window_m = ::CreateWindowExW(dialog_extended_style,
-                                         L"eve_dialog",
-                                         hackery::convert_utf(element.name_m).c_str(),
-                                         platform_style,    
-                                         10, 10, 20, 20,
-                                         parent_hwnd,
-                                         NULL,
-                                         ::GetModuleHandle(NULL),
-                                         NULL);
-
-    if (element.window_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
-
-    set_user_reference(element.window_m, &element);
+	const bool has_size_box = (element.attributes_m & (window_attributes_resizeable_s | window_attributes_live_resizeable_s));
+ 
+	element.window_m = implementation::make_window (parent, element.name_m, has_size_box);
+	
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
+	set_user_reference(element.window_m, &element);
+#endif
 
     return display.insert(parent, element.window_m);
 }

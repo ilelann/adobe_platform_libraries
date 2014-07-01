@@ -30,16 +30,16 @@ namespace adobe {
 
 /****************************************************************************************************/
 
-    struct edit_text_t : boost::noncopyable
+struct edit_text_t : boost::noncopyable
 {
     typedef std::string                                         model_type;
     typedef boost::function<void (const std::string&, bool&)>   edit_text_pre_edit_proc_t;
     typedef boost::function<void (const model_type&)>           setter_type;
     typedef boost::function<void (modifiers_t)>          edit_text_label_hit_proc_t;
 
-                      edit_text_t(const edit_text_ctor_block_t& block);
-	
-    void              initialize(HWND parent);
+    edit_text_t(const edit_text_ctor_block_t& block);
+
+    void              initialize(platform_display_type parent);
     label_t&          get_label();
 
 // placeable
@@ -68,7 +68,7 @@ namespace adobe {
     //
     long              get_window_style() const;
 
-    HWND                       control_m;
+    native_edit_text_t  control_m;
     theme_t             theme_m;
     label_t                    name_m;
     std::string                alt_text_m;
@@ -86,12 +86,8 @@ namespace adobe {
     long                       static_height_m;
     edit_text_pre_edit_proc_t  pre_edit_proc_m;
     setter_type                post_edit_proc_m;
-    edit_text_label_hit_proc_t label_hit_proc_m;
     bool                       type_2_debounce_m;
     std::string                value_m; // Used to debounce
-
-private: 
-    void                       edit_text_label_hit(modifiers_t);
 
 };
 
@@ -100,7 +96,7 @@ inline std::string get_control_string(const edit_text_t& widget)
     return implementation::get_control_string(widget.control_m);
 }
 
-inline HWND get_display(const edit_text_t& widget)
+inline platform_display_type get_display(const edit_text_t& widget)
     { return widget.control_m; }
 
 /****************************************************************************************************/

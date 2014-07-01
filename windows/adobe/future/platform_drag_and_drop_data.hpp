@@ -25,6 +25,7 @@
 #include <adobe/algorithm/find.hpp>
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/future/drag_and_drop_fwd.hpp>
+#include <adobe/future/platform_primitives.hpp>
 
 #include <vector>
 
@@ -133,7 +134,7 @@ private:
     client_callback_proc_t       callback_m;
     std::vector<boost::uint32_t> flavor_set_m;
     boost::uint32_t              chosen_flavor_m;
-    HWND                         widget_m;
+    platform_display_type                         widget_m;
 };
 
 /**************************************************************************************************/

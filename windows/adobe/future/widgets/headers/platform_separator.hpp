@@ -24,18 +24,18 @@
 namespace adobe {
 
 /****************************************************************************************************/
-    
+
 struct separator_t : boost::noncopyable, extents_slices_t
-{    
+{
     separator_t(bool is_vertical, theme_t theme);
-    
+
     void            measure(extents_t& result);
-    
+
     void            place(const place_data_t& place_data);
-    
+
     void            set_visible(bool make_visible);
-    
-    HWND            control_m;
+
+    platform_display_type            control_m;
     bool            is_vertical_m;
     theme_t  theme_m;
 };

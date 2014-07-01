@@ -4,7 +4,6 @@ project adobe/targa
 	;
 
 run     main.cpp
-        ../../..//asl_dev
         ../../..//boost_filesystem
     :   #args
     :   ./test.tga

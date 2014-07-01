@@ -37,9 +37,9 @@ struct panel_t : extents_slices_t, boost::noncopyable
 
     void        display(const any_regular_t& value);
 
-    void        set_visible(bool make_visible); 
+    void        set_visible(bool make_visible);
 
-    HWND                    control_m;
+    native_panel_t   control_m;
     theme_t          theme_m;
     any_regular_t    show_value_m;
 };

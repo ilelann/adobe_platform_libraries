@@ -26,7 +26,7 @@ namespace adobe {
 
 /****************************************************************************************************/
 
-    struct popup_t : boost::noncopyable
+struct popup_t : boost::noncopyable
 {
     typedef std::pair<std::string, any_regular_t>   menu_item_t;
     typedef std::vector<menu_item_t>				menu_item_set_t;
@@ -41,6 +41,8 @@ namespace adobe {
             const menu_item_t* first,
             const menu_item_t* last,
             theme_t            theme);
+
+    void on_sel_changed();
 
     void                reset_menu_item_set(const menu_item_t* first, const menu_item_t* last);
 
@@ -66,7 +68,7 @@ namespace adobe {
 
     void                enable(bool make_enabled);
 
-    HWND                 control_m;
+    native_popup_t       control_m;
     theme_t              theme_m;
     label_t              name_m;
     std::string          alt_text_m;

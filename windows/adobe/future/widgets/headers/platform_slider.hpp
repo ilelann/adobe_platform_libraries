@@ -13,13 +13,11 @@
 
 #include <adobe/config.hpp>
 
-#define WINDOWS_LEAN_AND_MEAN 1
-#include <windows.h>
-
 #include <adobe/extents.hpp>
 #include <adobe/future/widgets/headers/slider_helper.hpp>
 #include <adobe/layout_attributes.hpp>
 #include <adobe/widget_attributes.hpp>
+#include <adobe/future/platform_primitives.hpp>
 
 #include <boost/function.hpp>
 #include <boost/noncopyable.hpp>
@@ -34,7 +32,7 @@ namespace adobe {
 
 struct slider_t : boost::noncopyable
 {
-    typedef double                                    model_type;
+    typedef int                                    model_type;
     typedef boost::function<void (const model_type&)> setter_type;
 
     slider_t(const std::string&          alt_text,
@@ -43,6 +41,8 @@ struct slider_t : boost::noncopyable
              std::size_t                 num_ticks,
              const value_range_format_t& format,
              theme_t                     theme);
+
+	void on_new_value (model_type new_value);
 
     void measure(extents_t& result);
 
@@ -55,7 +55,7 @@ struct slider_t : boost::noncopyable
     void monitor(const setter_type& proc)
         { value_proc_m = proc; }
 
-    HWND                 control_m;
+    native_slider_t      control_m;
     std::string          alt_text_m;
     bool                 is_vertical_m;
     slider_style_t       style_m;

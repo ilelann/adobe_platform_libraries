@@ -6,11 +6,6 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-#include <shlobj.h>
-
 #include <adobe/future/widgets/headers/platform_presets.hpp>
 #include <adobe/future/widgets/headers/presets_common.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
@@ -32,55 +27,25 @@ namespace {
 
 /****************************************************************************************************/
 
-HBITMAP bitmap_normal()
+adobe::native_image_resource_t bitmap_normal()
 {
-    static HBITMAP bitmap_s(0);
-
-    if (bitmap_s == 0)
-    {
-        boost::gil::rgba8_image_t image;
-
-        adobe::image_slurp("preset_button_u_n.tga", image);
-
-        bitmap_s = adobe::to_bitmap(image);
-    }
-
+    static auto bitmap_s = adobe::implementation::make_image_resource("preset_button_u_n.tga");
     return bitmap_s;
 }
 
 /****************************************************************************************************/
 
-HBITMAP bitmap_clicked()
+adobe::native_image_resource_t bitmap_clicked()
 {
-    static HBITMAP bitmap_s(0);
-
-    if (bitmap_s == 0)
-    {
-        boost::gil::rgba8_image_t image;
-
-        adobe::image_slurp("preset_button_d_n.tga", image);
-
-        bitmap_s = adobe::to_bitmap(image);
-    }
-
+    static auto bitmap_s = adobe::implementation::make_image_resource("preset_button_d_n.tga");
     return bitmap_s;
 }
 
 /****************************************************************************************************/
 
-HBITMAP bitmap_disabled()
+adobe::native_image_resource_t bitmap_disabled()
 {
-    static HBITMAP bitmap_s(0);
-
-    if (bitmap_s == 0)
-    {
-        boost::gil::rgba8_image_t image;
-
-        adobe::image_slurp("preset_button_u_d.tga", image);
-
-        bitmap_s = adobe::to_bitmap(image);
-    }
-
+    static auto bitmap_s = adobe::implementation::make_image_resource("preset_button_u_d.tga");
     return bitmap_s;
 }
 
@@ -353,12 +318,10 @@ void enable(presets_t& control, bool enable)
 {
     assert(control.control_m);
 
-    ::EnableWindow(control.control_m, enable);
+    set_control_enabled(control.control_m, enable);
 
-    ::SendMessage(control.control_m, STM_SETIMAGE, IMAGE_BITMAP, 
-        hackery::cast<LPARAM>(enable ? bitmap_normal() : bitmap_disabled()));
+    reset_image(control.control_m, enable ? bitmap_normal() : bitmap_disabled());
 }
-
     
 /****************************************************************************************************/
 

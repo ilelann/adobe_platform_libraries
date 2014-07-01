@@ -6,6 +6,9 @@
 
 /****************************************************************************************************/
 
+#define WINDOWS_LEAN_AND_MEAN 1
+
+#include <windows.h>
 #include <adobe/future/platform_locale_data.hpp>
 
 #include <adobe/future/locale.hpp>

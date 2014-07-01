@@ -20,14 +20,8 @@
 
 #include <adobe/config.hpp>
 
-#define WINDOWS_LEAN_AND_MEAN 1
-#include <windows.h>
-
 #include <adobe/extents.hpp>
 #include <adobe/future/widgets/headers/widget_utils.hpp>
-
-#include <uxtheme.h>
-#include <tmschema.h>
 
 #include <string>
 
@@ -60,7 +54,7 @@ namespace metrics {
 /// the text passed in lieu of the name of the window into consideration when measuring.
 //
 
-extents_t measure_text(const std::string& text, HWND window, int platform_placeable_type);
+extents_t measure_text(const std::string& text, platform_display_type window, int platform_placeable_type);
 
 /****************************************************************************************************/
 
@@ -70,10 +64,18 @@ extents_t measure_text(const std::string& text, HWND window, int platform_placea
 /// the name of the window into consideration when measuring.
 //
 
-extents_t measure(HWND window, int platform_placeable_type);
+// old version
+//extents_t measure(platform_display_type window, int platform_placeable_type);
 
+extents_t measure_checkbox		(platform_display_type window);
+extents_t measure_pushbutton	(platform_display_type window);
+extents_t measure_radiobutton	(platform_display_type window);
+//, BP_CHECKBOX
+// use BP_PUSHBUTTON internally
+//, BP_RADIOBUTTON
 /****************************************************************************************************/
 
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
 //
 /// This function uses the given metrics to calculate the optimal bounds of
 /// a widget. This code isn't in metrics::measure because some controls
@@ -97,7 +99,7 @@ extents_t measure(HWND window, int platform_placeable_type);
 extents_t compose_measurements(const SIZE*       widget_size,
                                       const MARGINS*    widget_margins,
                                       const TEXTMETRIC* font_metrics,
-                                      const RECT*       text_extents,
+                                      const place_data_t*       text_extents,
                                       const int*        border);
 
 /****************************************************************************************************/
@@ -123,30 +125,6 @@ bool get_font(int widget_type, LOGFONTW& out_font);
 
 bool get_font_metrics(int widget_type, TEXTMETRIC& out_metrics);
 
-/// Get the extents for the given text string, to be contained in the
-/// specified widget.
-///
-/// \param  widget_type the type of the widget.
-/// \param  text        the string to return the extents for.
-/// \param  out_extents a reference filled with the text extents.
-///
-/// \return true if the text extents were returned successfully, false
-///     if the metrics could not be returned.
-
-bool get_text_extents(int widget_type, std::wstring text, RECT& out_extents, const RECT* in_extents = NULL);
-
-/// Get the specified measurement for the given widget when in the
-/// given state.
-///
-/// \param  widget_type the type of the widget.
-/// \param  measurement the required measurement.
-/// \param  out_val     a reference filled with the requested value.
-///
-/// \return true if the value was returned successfully, false
-///     if the value could not be found.
-
-bool get_integer(int widget_type, int measurement, int& out_val);
-
 /// Get the size of the specified widget.
 ///
 /// \param  widget_type the type of the widget.
@@ -170,26 +148,6 @@ bool get_size(int widget_type, THEMESIZE measurement, SIZE& out_size);
 
 bool get_margins(int widget_type, MARGINS& out_margins);
 
-/// Get the text margins for a button widget. This call is specific
-/// to a button widget, but is only available with Visual Styles on
-/// Windows XP (hence is grouped in with the other metrics functions
-/// of similar availability).
-///
-/// \param  widget_type the UXTheme type of button
-/// \param  out_margins a rectangle containing the margins
-///
-/// \return true if the margins were returned successfully, false
-///     if the margins could not be found.
-
-bool get_button_text_margins(int widget_type, RECT& out_margins);
-
-/// Return true if visual styles are currently in use, false if they
-/// are not being used.
-///
-/// \return true if visual styles are in use, false otherwise.
-
-bool using_styles();
-
 /// Use the current style to draw the background of the parent control
 /// of the given window using the given DC. This function is useful for
 /// drawing the background of controls which appear on top of tab controls,
@@ -199,7 +157,19 @@ bool using_styles();
 /// \param  dc  the DC to draw with. This DC does not have to be
 ///         drawing onto the given window.
 
-void draw_parent_background(HWND window, HDC dc);
+void draw_parent_background(platform_display_type window, HDC dc);
+
+#endif // not ADOBE_PLATFORM_WIDGETS_WT
+
+
+// ilelann : no theme in WT backend. dummy for these three functions.
+
+/// Return true if visual styles are currently in use, false if they
+/// are not being used.
+///
+/// \return true if visual styles are in use, false otherwise.
+
+bool using_styles();
 
 /// Before any of the other functions can be called, the theme data must be
 /// loaded from the window. This function should also be called any time the
@@ -213,14 +183,54 @@ void draw_parent_background(HWND window, HDC dc);
 /// \return true if the theme was obtained from the window, false if the
 ///     theme could not be obtained from the window.
 
-bool set_window(HWND window);
+bool set_window(platform_display_type window);
 
 /// Before any of the other functions can be called, the theme name must be set.
 /// Alternatively, set_window can be used.
 ///
-/// \param  the name of the theme to use. 
+/// \param  the name of the theme to use.
 
-void set_theme_name(const WCHAR* theme_name);
+void set_theme_name(const wide_char_t* theme_name);
+
+
+
+/// Get the extents for the given text string, to be contained in the
+/// specified widget.
+///
+/// \param  widget_type the type of the widget.
+/// \param  text        the string to return the extents for.
+/// \param  out_extents a reference filled with the text extents.
+///
+/// \return true if the text extents were returned successfully, false
+///     if the metrics could not be returned.
+
+bool get_text_extents(int widget_type, std::wstring text, place_data_t& out_extents, const place_data_t* in_extents = NULL);
+
+/// Get the specified measurement for the given widget when in the
+/// given state.
+///
+/// \param  widget_type the type of the widget.
+/// \param  measurement the required measurement.
+/// \param  out_val     a reference filled with the requested value.
+///
+/// \return true if the value was returned successfully, false
+///     if the value could not be found.
+
+bool get_integer(int widget_type, int measurement, int& out_val);
+
+
+/// Get the text margins for a button widget. This call is specific
+/// to a button widget, but is only available with Visual Styles on
+/// Windows XP (hence is grouped in with the other metrics functions
+/// of similar availability).
+///
+/// \param  widget_type the UXTheme type of button
+/// \param  out_margins a rectangle containing the margins
+///
+/// \return true if the margins were returned successfully, false
+///     if the margins could not be found.
+
+bool get_button_text_margins(int widget_type, place_data_t& out_margins);
 
 /****************************************************************************************************/
 

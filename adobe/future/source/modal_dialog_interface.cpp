@@ -21,7 +21,7 @@
 #include <adobe/keyboard.hpp>
 #include <adobe/xstring.hpp>
 
-#if ADOBE_PLATFORM_WIN
+#if ADOBE_PLATFORM_WIDGETS_WIN
     #define WINDOWS_LEAN_AND_MEAN 1
 
     #include <windows.h>
@@ -308,7 +308,7 @@ dialog_result_t modal_dialog_t::go(std::istream& layout, std::istream& sheet)
 
         ::RunAppModalLoopForWindow(owner);
 
-#elif ADOBE_PLATFORM_WIN
+#elif ADOBE_PLATFORM_WIDGETS_WIN
 
         HWND cntl(view_m->root_display_m);
 
@@ -325,7 +325,7 @@ dialog_result_t modal_dialog_t::go(std::istream& layout, std::istream& sheet)
                 {
                     special_key_handled = keyboard_t::get().dispatch(key_type(msg.wParam),
                                                                      msg.message == WM_KEYDOWN || msg.message == WM_SYSKEYDOWN,
-                                                                     modifier_state(),
+																	 implementation::modifier_state(),
                                                                      any_regular_t(cntl));
                 }
 
@@ -375,7 +375,7 @@ bool modal_dialog_t::end_dialog()
 
     ::QuitAppModalLoopForWindow(owner);
 
-#elif ADOBE_PLATFORM_WIN
+#elif ADOBE_PLATFORM_WIDGETS_WIN
 
     ::PostQuitMessage(0);
 

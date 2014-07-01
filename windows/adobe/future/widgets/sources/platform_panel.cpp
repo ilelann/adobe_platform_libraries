@@ -6,22 +6,14 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-#include <commctrl.h>
-#include <tchar.h>
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <adobe/future/widgets/headers/platform_panel.hpp>
-
 #include <adobe/future/widgets/headers/display.hpp>
 #include <adobe/future/widgets/headers/platform_metrics.hpp>
 #include <adobe/future/windows_cast.hpp>
 
 /****************************************************************************************************/
+
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
 
 namespace {
 
@@ -118,7 +110,7 @@ LRESULT CALLBACK panel_window_procedure(HWND panel, UINT message, WPARAM wParam,
         //
         // REVISIT (ralpht): Don't do anything if the panel's parent isn't a tab control.
         //
-        HWND parent = GetParent(panel);
+		adobe::platform_display_type parent = adobe::get_parent_control(panel);
         if (parent) {
             std::vector<WCHAR> classname(1024);
             *(&classname[::GetClassNameW(parent, &classname[0], 1024)]) = 0;
@@ -190,6 +182,8 @@ LRESULT CALLBACK panel_window_procedure(HWND panel, UINT message, WPARAM wParam,
 
 } //end anonymous namespace 
 
+#endif // ndef ADOBE_PLATFORM_WIDGETS_WT
+
 /****************************************************************************************************/
 
 namespace adobe {
@@ -207,7 +201,8 @@ panel_t::panel_t(const any_regular_t& show_value, theme_t theme) :
     {
         inited = true;
 
-        // REVISIT (fbrereto) : init_once all this stuff
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
+		// REVISIT (fbrereto) : init_once all this stuff
         INITCOMMONCONTROLSEX control_info = { sizeof(INITCOMMONCONTROLSEX), 0x0000FFFF };
         ::InitCommonControlsEx(&control_info);
 
@@ -225,6 +220,7 @@ panel_t::panel_t(const any_regular_t& show_value, theme_t theme) :
         wc.lpszClassName = L"eve_panel";
 
         RegisterClassW(&wc);
+#endif
     }
 }
 
@@ -265,22 +261,8 @@ platform_display_type insert<panel_t>(display_t&             display,
                                              platform_display_type&  parent,
                                              panel_t&     element)
 {
-    HWND parent_hwnd(parent);
-
     assert(!element.control_m);
-
-    element.control_m = ::CreateWindowEx(   WS_EX_CONTROLPARENT | WS_EX_COMPOSITED,
-                    _T("eve_panel"),
-                    NULL,
-                    WS_CHILD | WS_VISIBLE,
-                    0, 0, 10, 10,
-                    parent_hwnd,
-                    0,
-                    ::GetModuleHandle(NULL),
-                    NULL);
-
-    if (element.control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
+	element.control_m = implementation::make_panel (parent);
 
     return display.insert(parent, element.control_m);
 }

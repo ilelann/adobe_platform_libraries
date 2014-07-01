@@ -10,7 +10,7 @@ PLATFORM_DIRECTORIES_NAME = ../../../stub ;
 
 switch [ os.name ]
 {
-case NT : # --- Windows ---------------------------------------------------------------------------
+case * : # --- Windows ---------------------------------------------------------------------------
     {
     #
     # Directory name for Windows specific sources and headers
@@ -26,18 +26,20 @@ case NT : # --- Windows --------------------------------------------------------
                             # The header file containing the resource definitions is currently
                             # used by win/ui_core_implementation.cpp to load an icon in begin.
                             #
-                            <include>resources/win32
+                            #<include>resources/win32
                             <include>.
+                            #<define>ADOBE_PLATFORM_WIDGETS_WIN
+                            <define>ADOBE_PLATFORM_WIDGETS_WT
                             #
                             # These definitions say that we're targetting Windows XP. 
                             # That means that we get various preprocessor definitions which we
                             # need, such as the WS_EX_COMPOSITED window style.
                             #
-                            <define>WINVER=0x560 <define>_WIN32_WINNT=0x560 <define>_WIN32_IE=0x560
+                            #<define>WINVER=0x560 <define>_WIN32_WINNT=0x560 <define>_WIN32_IE=0x560
 
-                            <toolset>msvc:<linkflags>"gdi32.lib user32.lib comctl32.lib shell32.lib comdlg32.lib"
+                            #<toolset>msvc:<linkflags>"gdi32.lib user32.lib comctl32.lib shell32.lib comdlg32.lib"
 
-                            <toolset>gcc:<linkflags>"-lgdi32 -lshell32 -luser32 -lcomctl32"
+                            #<toolset>gcc:<linkflags>"-lgdi32 -lshell32 -luser32 -lcomctl32"
 
                         ;
     }
@@ -115,7 +117,7 @@ lib adobe_widgets
         ../../../source/$(NONFUTURE_SET).cpp
         ../source/$(FUTURE_SET).cpp
         $(PLATFORM_SOURCES)
-       ../../../../adobe_source_libraries//asl_dev
+        /adobe//asl
  
     : #requirements
         $(PLATFORM_SETTINGS)
@@ -127,6 +129,6 @@ lib adobe_widgets
         #<toolset>darwin,<arch>native:<atomics>off
         #<toolset>darwin,<arch>ppc:<atomics>off
         #<toolset>darwin,<arch>fat:<atomics>off
-       $(PLATFORM_SETTINGS)
+        $(PLATFORM_SETTINGS)
         $(INCLUDE)
     ;

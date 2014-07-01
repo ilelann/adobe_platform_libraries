@@ -11,9 +11,7 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
+#include <adobe/future/platform_primitives.hpp>
 
 #include <boost/function.hpp>
 
@@ -31,7 +29,7 @@ struct periodical_platform_data_t
 
     ~periodical_platform_data_t();
 
-    UINT_PTR    timer_ref_m;
+    timer_handle_t    timer_ref_m;
     fire_proc_t fire_m;
 };
 

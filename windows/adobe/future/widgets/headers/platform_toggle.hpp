@@ -12,12 +12,10 @@
 /****************************************************************************************************/
 
 #include <adobe/config.hpp>
-
-#include <windows.h>
-
 #include <adobe/any_regular.hpp>
 #include <adobe/layout_attributes.hpp>
 #include <adobe/widget_attributes.hpp>
+#include <adobe/future/platform_primitives.hpp>
 
 #include <boost/function.hpp>
 #include <boost/gil/gil_all.hpp>
@@ -43,6 +41,8 @@ struct toggle_t
              const image_type&   image_disabled,
              theme_t             theme);
 
+    void on_clicked();
+
     void measure(extents_t& result);
 
     void place(const place_data_t& place_data);
@@ -54,7 +54,7 @@ struct toggle_t
     void display(const any_regular_t& to_value);
 
 #ifndef ADOBE_NO_DOCUMENTATION
-    HWND                       control_m;
+    native_toggle_t            control_m;
     theme_t                    theme_m;
     std::string                alt_text_m;
     image_type                 image_on_m;
@@ -63,9 +63,9 @@ struct toggle_t
     setter_type                setter_proc_m;
     any_regular_t              value_on_m;
     any_regular_t              last_m;
-    HBITMAP                    bitmap_on_m;
-    HBITMAP                    bitmap_off_m;
-    HBITMAP                    bitmap_disabled_m;
+    native_image_resource_t    bitmap_on_m;
+    native_image_resource_t    bitmap_off_m;
+    native_image_resource_t    bitmap_disabled_m;
 #endif
 };
 

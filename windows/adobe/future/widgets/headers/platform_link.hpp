@@ -12,14 +12,11 @@
 /****************************************************************************************************/
 
 #include <adobe/config.hpp>
-
-#define WINDOWS_LEAN_AND_MEAN 1
-#include <windows.h>
-
 #include <adobe/any_regular.hpp>
 #include <adobe/extents.hpp>
 #include <adobe/layout_attributes.hpp>
 #include <adobe/widget_attributes.hpp>
+#include <adobe/future/platform_primitives.hpp>
 
 #include <boost/function.hpp>
 
@@ -52,8 +49,8 @@ struct link_t
 
     void monitor(const setter_type& proc);
 
-    HWND                 control_m;
-    HWND                 link_icon_m;
+    platform_display_type                 control_m;
+    platform_display_type                 link_icon_m;
     std::string          alt_text_m;
     any_regular_t on_value_m;
     any_regular_t off_value_m;

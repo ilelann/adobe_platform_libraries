@@ -10,7 +10,7 @@
 
 #if ADOBE_PLATFORM_MAC
     #include <adobe/macintosh_carbon_safe.hpp>
-#elif ADOBE_PLATFORM_WIN
+#elif ADOBE_PLATFORM_WIDGETS_WIN
     #define WINDOWS_LEAN_AND_MEAN 1
 
     #include <windows.h>

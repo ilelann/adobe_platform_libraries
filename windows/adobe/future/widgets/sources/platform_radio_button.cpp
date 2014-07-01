@@ -12,37 +12,6 @@
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 #include <adobe/future/widgets/headers/platform_metrics.hpp>
 
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
-/****************************************************************************************************/
-
-namespace {
-
-/****************************************************************************************************/
-
-LRESULT CALLBACK radio_button_subclass_proc(HWND     window,
-                                            UINT     message,
-                                            WPARAM   wParam,
-                                            LPARAM   lParam,
-                                            UINT_PTR ptr,
-                                            DWORD_PTR /* ref */)
-{
-    adobe::radio_button_t& button(*reinterpret_cast<adobe::radio_button_t*>(ptr));
-
-    if (message == WM_COMMAND && HIWORD(wParam) == BN_CLICKED)
-    {
-        if (!button.hit_proc_m.empty())
-            button.hit_proc_m(button.set_value_m);
-    }
-
-    return ::DefSubclassProc(window, message, wParam, lParam);
-}
-
-/****************************************************************************************************/
-
-} // namespace
 
 /****************************************************************************************************/
 
@@ -63,14 +32,23 @@ radio_button_t::radio_button_t(const std::string&          name,
 
 /****************************************************************************************************/
 
+void radio_button_t::on_clicked()
+{
+	if (!hit_proc_m.empty())
+		hit_proc_m(set_value_m);
+}
+
 void radio_button_t::measure(extents_t& result)
 {
-    result = metrics::measure(control_m, BP_RADIOBUTTON);
+#ifdef ADOBE_PLATFORM_WIDGETS_WT
+	return;
+#else
+    result = metrics::measure_radiobutton(control_m);
 
     //
     // Get the text margins, and factor those into the bounds.
     //
-    RECT margins = {0, 0, 0, 0};
+    place_data_t margins;
 
     metrics::set_window(control_m);
 
@@ -81,8 +59,9 @@ void radio_button_t::measure(extents_t& result)
         // the widget is already large enough to contain big text (as calculated
         // by calculate_best_bounds).
         //
-        result.width() += margins.left + margins.right;
+        result.width() += left(margins) + left(margins);
     }
+#endif
 }
 
 /****************************************************************************************************/
@@ -100,7 +79,7 @@ void radio_button_t::enable(bool make_enabled)
 {
     assert(control_m);
     
-    ::EnableWindow(control_m, make_enabled);
+	set_control_enabled(control_m, make_enabled);
 }
 
 /****************************************************************************************************/
@@ -114,7 +93,7 @@ void radio_button_t::display(const any_regular_t& value)
 
     last_m = value;
 
-    ::SendMessage(control_m, BM_SETCHECK, last_m == set_value_m ? BST_CHECKED : BST_UNCHECKED, 0);
+	set_control_checked (control_m, last_m == set_value_m ? check_state(true) : check_state(false));
 }
 
 /****************************************************************************************************/
@@ -133,26 +112,14 @@ platform_display_type insert<radio_button_t>(display_t&             display,
                                                 platform_display_type& parent,
                                                 radio_button_t&     element)
 {
-    HWND parent_hwnd(parent);
+	element.control_m = implementation::make_radio_button (parent, element.name_m);
 
-    element.control_m = ::CreateWindowExW(WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"BUTTON",
-                                          hackery::convert_utf(element.name_m).c_str(),
-                                          WS_CHILD | WS_VISIBLE | BS_RADIOBUTTON | WS_TABSTOP | BS_NOTIFY,
-                                          0, 0, 100, 20,
-                                          parent_hwnd,
-                                          0,
-                                          ::GetModuleHandle(NULL),
-                                          NULL);
-
-    if (element.control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
-
-    set_font(element.control_m, BP_RADIOBUTTON);
+    set_font_radiobutton(element.control_m);
 
     if (!element.alt_text_m.empty())
         implementation::set_control_alt_text(element.control_m, element.alt_text_m);
 
-    ::SetWindowSubclass(element.control_m, radio_button_subclass_proc, reinterpret_cast<UINT_PTR>(&element), 0);
+	implementation::setup_callback_radio_button(element);
 
     return display.insert(parent, element.control_m);
 }

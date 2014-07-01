@@ -32,9 +32,6 @@ if [ "$BUILDTOOL" == "xcode" ] ; then
 
 elif [ "$BUILDTOOL" == "bjam" ] ; then
 
-    # bjam is currently NOT set up for the Adobe Platform Libraries.
-    exit 1;
-
     if [ "$BUILDMODE" == "debug" ] ; then
         CURMODE="debug"
     elif [ "$BUILDMODE" == "release" ] ; then
@@ -46,10 +43,13 @@ elif [ "$BUILDTOOL" == "bjam" ] ; then
     fi
 
     PROCESSOR_COUNT=`sysctl -n hw.ncpu`
+    if [ "$PROCESSOR_COUNT" == "" ] ; then
+        PROCESSOR_COUNT=`nproc`
+    fi
 
     echo "INFO : Found $PROCESSOR_COUNT processors."
 
-    echo_run ../boost_libraries/b2 --toolset=clang --without-python --hash -j$PROCESSOR_COUNT $CURMODE
+    echo_run ../boost_libraries/b2 -q --toolset=${TOOLSET:-clang} --without-python --hash -j$PROCESSOR_COUNT $CURMODE
 
 else
 

@@ -40,13 +40,14 @@ platform_display_type insert(display_t& display, platform_display_type& position
 
 /****************************************************************************************************/
 
-template <>
-platform_display_type display_t::insert<platform_display_type>(platform_display_type& parent, const platform_display_type& element)
+//template <>
+platform_display_type display_t::insert/*<platform_display_type>*/(platform_display_type& parent, const platform_display_type& element)
 {
     static const platform_display_type null_parent_s = platform_display_type();
 
     if (parent != null_parent_s && parent != get_main_display().root())
     {
+#ifndef ADOBE_PLATFORM_WIDGETS_WT
         if (::SetWindowPos(element, HWND_BOTTOM, 0, 0, 0, 0, SWP_NOMOVE | SWP_NOSIZE ) == 0)
 	        ADOBE_THROW_LAST_ERROR;
 
@@ -54,8 +55,8 @@ platform_display_type display_t::insert<platform_display_type>(platform_display_
 				      WM_CHANGEUISTATE,
 				      UISF_HIDEACCEL| UISF_HIDEFOCUS | UIS_INITIALIZE,
 				      0);  
-
-        assert(::GetParent(element) == parent);
+#endif
+        assert(get_parent_control(element) == parent);
     }
 
     return element;

@@ -6,18 +6,11 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-#include <Commctrl.h>
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <adobe/future/widgets/headers/display.hpp>
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 #include <adobe/future/widgets/headers/platform_metrics.hpp>
 #include <adobe/future/widgets/headers/platform_popup.hpp>
+#include <adobe/future/widgets/headers/platform_widget_utils.hpp>
 #include <adobe/placeable_concept.hpp>
 
 /****************************************************************************************************/
@@ -38,66 +31,7 @@ void clear_menu_items(adobe::popup_t& control)
 
     control.menu_items_m.erase(control.menu_items_m.begin(), control.menu_items_m.end());
 
-    if (::SendMessage(control.control_m, CB_RESETCONTENT, 0, 0) == CB_ERR)
-        ADOBE_THROW_LAST_ERROR;
-}
-
-/****************************************************************************************************/
-
-LRESULT CALLBACK popup_subclass_proc(HWND window, UINT message, WPARAM wParam, LPARAM lParam, UINT_PTR ptr, DWORD_PTR /* ref */)
-{
-    adobe::popup_t& control(*reinterpret_cast<adobe::popup_t*>(ptr));
-
-    assert(control.control_m);
-
-    //
-    // Inform everybody that the selection is changing.
-    //
-    if (message == WM_COMMAND &&
-        HIWORD(wParam) == CBN_SELCHANGE &&
-        control.type_2_debounce_m == false &&
-        (control.value_proc_m.empty() == false ||
-         control.extended_value_proc_m.empty() == false))
-    {
-        long new_index(static_cast<long>(::SendMessage(control.control_m, CB_GETCURSEL, 0, 0)));
-
-        if (control.custom_m)
-            --new_index;
-
-        if (control.value_proc_m)
-            control.value_proc_m(control.menu_items_m.at(new_index).second);
-
-        if (control.extended_value_proc_m)
-            control.extended_value_proc_m(control.menu_items_m.at(new_index).second, adobe::modifier_state());
-    }
-
-    return ::DefSubclassProc(window, message, wParam, lParam);
-}
-
-/****************************************************************************************************/
-
-void initialize(adobe::popup_t& control, HWND parent)
-{
-    assert(!control.control_m);
-
-    control.control_m = ::CreateWindowEx(WS_EX_COMPOSITED, WC_COMBOBOX,
-                                         NULL,
-                                         WS_CHILD | WS_VISIBLE | CBS_DROPDOWNLIST | WS_TABSTOP | WS_VSCROLL,
-                                         0, 0, 0, 0,
-                                         parent,
-                                         0,
-                                         ::GetModuleHandle(NULL),
-                                         NULL);
-
-    if (control.control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
-
-    ::SetWindowSubclass(control.control_m, popup_subclass_proc, reinterpret_cast<UINT_PTR>(&control), 0);
-
-    adobe::set_font(control.control_m, CP_DROPDOWNBUTTON);
-
-    if (!control.alt_text_m.empty())
-        adobe::implementation::set_control_alt_text(control.control_m, control.alt_text_m);
+    adobe::implementation::clear_popup(control.control_m);
 }
 
 /****************************************************************************************************/
@@ -140,12 +74,12 @@ void message_menu_item_set(adobe::popup_t& p)
 {
     assert(p.control_m);
 
-    for(adobe::popup_t::menu_item_set_t::const_iterator first=p.menu_items_m.begin(), last=p.menu_items_m.end(); first != last; ++first)
+    for(const auto & items : p.menu_items_m)
     {
-        if (::SendMessageW(p.control_m, CB_ADDSTRING, 0, (LPARAM) hackery::convert_utf(first->first).c_str()) == CB_ERR)
-            ADOBE_THROW_LAST_ERROR;
+        adobe::implementation::append_popup_string(p.control_m, items.first);
     }
-    ::SendMessage(p.control_m, CB_SETCURSEL, 0, 0);
+
+    adobe::implementation::select_popup_index(p.control_m, 0);
     
     p.enable(!p.menu_items_m.empty());
 
@@ -189,6 +123,27 @@ popup_t::popup_t(const std::string& name,
 
 /****************************************************************************************************/
 
+void popup_t::on_sel_changed()
+{
+    if(type_2_debounce_m == false &&
+        (value_proc_m.empty() == false ||
+         extended_value_proc_m.empty() == false))
+    {
+        auto new_index = adobe::implementation::get_popup_index(control_m);
+
+        if (custom_m)
+            --new_index;
+
+        if (value_proc_m)
+            value_proc_m(menu_items_m.at(new_index).second);
+
+        if (extended_value_proc_m)
+            extended_value_proc_m(menu_items_m.at(new_index).second, adobe::modifier_state());
+    }
+}
+
+/****************************************************************************************************/
+
 void popup_t::measure(extents_t& result)
 {
     assert(control_m);
@@ -203,7 +158,7 @@ void popup_t::measure(extents_t& result)
     //
     menu_item_set_t::iterator first(menu_items_m.begin());
     menu_item_set_t::iterator last(menu_items_m.end());
-    RECT largest_extents = { 0, 0, 0, 0 };
+    place_data_t largest_extents;
     bool have_extents = false;
     //
     // Now iterate through all of our text.
@@ -213,7 +168,7 @@ void popup_t::measure(extents_t& result)
         //
         // Discover the extents of this text!
         //
-        RECT extents;
+        place_data_t extents;
         if (metrics::get_text_extents(CP_DROPDOWNBUTTON, hackery::convert_utf(first->first), extents))
         {
             //
@@ -221,7 +176,7 @@ void popup_t::measure(extents_t& result)
             // Now we just need to see if they are larger than the
             // ones we already have.
             //
-            if ((extents.right - extents.left) > (largest_extents.right - largest_extents.left))
+            if (width(extents) > width(largest_extents))
                 largest_extents = extents;
             have_extents = true;
         }
@@ -257,7 +212,7 @@ void popup_t::measure(extents_t& result)
         //
         // Figure out the dimensions for the entire control.
         //
-        result.width() = text.left + largest_extents.right - largest_extents.left + cbi.rcButton.right - cbi.rcButton.left;
+        result.width() = text.left + width(largest_extents) + cbi.rcButton.right - cbi.rcButton.left;
         result.height() = wi.rcWindow.bottom - wi.rcWindow.top;
         //
         // Deduce the baseline from the text rectangle.
@@ -285,7 +240,7 @@ void popup_t::measure(extents_t& result)
     // the widgets in set_bounds.
     //
     extents_t label_bounds;
-    measure_label_text(name_m, label_bounds, ::GetParent(control_m));
+    measure_label_text(name_m, label_bounds, get_parent_control(control_m));
     static_height_m = label_bounds.height();
     static_baseline_m = label_bounds.vertical().guide_set_m[0];
     //
@@ -426,14 +381,14 @@ void popup_t::display(const model_type& value)
             {
                 custom_m = false;
 
-                ::SendMessage(control_m, CB_DELETESTRING, 0, 0);
+                implementation::delete_popup_index(0);
             }
 
             std::ptrdiff_t index(first - menu_items_m.begin());
 
             type_2_debounce_m = true;
 
-            ::SendMessage(control_m, CB_SETCURSEL, index, 0);
+            implementation::select_popup_index(control_m, index);
 
             type_2_debounce_m = false;
 
@@ -453,11 +408,11 @@ void popup_t::display_custom()
 
     custom_m = true;
 
-    ::SendMessageA(control_m, CB_INSERTSTRING, 0, (LPARAM)custom_item_name_m.c_str());
+    implementation::prepend_popup_string(control_m, custom_item_name_m);
 
     type_2_debounce_m = true;
 
-    ::SendMessage(control_m, CB_SETCURSEL, 0, 0);
+    implementation::select_popup_index(control_m, 0);
 
     type_2_debounce_m = false;
 }
@@ -468,14 +423,14 @@ void popup_t::select_with_text(const std::string& text)
 {
     assert(control_m);
 
-    long old_index(static_cast<long>(::SendMessage(control_m, CB_GETCURSEL, 0, 0)));
+    auto old_index = implementation::get_popup_index(control_m);
 
-    ::SendMessageW(control_m, CB_SELECTSTRING, (WPARAM) -1, (LPARAM) hackery::convert_utf(text.c_str()).c_str());
+    implementation::select_popup_string (control_m, text);
 
     if (value_proc_m.empty())
         return;
 
-    long new_index(static_cast<long>(::SendMessage(control_m, CB_GETCURSEL, 0, 0)));
+    auto new_index = implementation::get_popup_index(control_m);
 
     if (new_index != old_index)
         value_proc_m(menu_items_m.at(new_index).second);
@@ -485,7 +440,7 @@ void popup_t::select_with_text(const std::string& text)
 
 void popup_t::monitor(const setter_type& proc)
 {
-    assert(control_m);
+    assert(!is_null_control(control_m));
 
     value_proc_m = proc;
 }
@@ -494,7 +449,7 @@ void popup_t::monitor(const setter_type& proc)
 
 void popup_t::monitor_extended(const extended_setter_type& proc)
 {
-    assert(control_m);
+    assert(!is_null_control(control_m));
 
     extended_value_proc_m = proc;
 }
@@ -506,17 +461,21 @@ void popup_t::monitor_extended(const extended_setter_type& proc)
 template <>
 platform_display_type insert<popup_t>(display_t& display, platform_display_type& parent, popup_t& element)
 {
-    HWND parent_hwnd(parent);
-
     if (element.using_label_m)
         insert(display, parent, element.name_m);
 
-    ::initialize(element, parent_hwnd);
+    assert(is_null_control(element.control_m));
+
+    element.control_m = implementation::make_popup(parent, element);
+
+    adobe::set_font_dropdownbutton(element.control_m);
+
+    if (!element.alt_text_m.empty())
+        adobe::implementation::set_control_alt_text(element.control_m, element.alt_text_m);
+
     ::message_menu_item_set(element);
 
-    platform_display_type result(display.insert(parent, element.control_m));
-
-    return result;
+    return display.insert(parent, element.control_m);
 }
 
 /****************************************************************************************************/

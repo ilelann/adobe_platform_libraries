@@ -6,12 +6,6 @@
 
 /****************************************************************************************************/
 
-#include <windows.h>
-#include <uxtheme.h>
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <adobe/future/number_formatter.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
 #include <adobe/future/widgets/headers/widget_utils.hpp>
@@ -30,7 +24,7 @@ namespace {
 
 /****************************************************************************************************/
 
-std::wstring set_field_text(std::string                       label,
+std::string set_field_text(std::string                       label,
                             double                            value,
                             const std::vector<adobe::unit_t>& unit_set,
                             std::wstring::size_type*          label_chars=0)
@@ -75,7 +69,7 @@ std::wstring set_field_text(std::string                       label,
     if (!suffix.empty())
         result << " " << suffix;
 
-    return hackery::convert_utf(result.str().c_str());
+    return result.str();
 }
 
 /****************************************************************************************************/
@@ -100,31 +94,20 @@ extern void throw_last_error_exception(const char* file, long line);
 
 /****************************************************************************************************/
 
-void display_number_t::initialize(HWND parent)
+void display_number_t::initialize(platform_display_type parent)
 {
-    RECT bounds = { 0, 0, 100, 100 };
+    place_data_t bounds;
+	width(bounds) = 100;
+	height(bounds) = 100;
 
     bounds_m = bounds;
 
-    long width(bounds.right - bounds.left);
-    long height(bounds.bottom - bounds.top);
-
-    window_m = ::CreateWindowExW(WS_EX_COMPOSITED, L"STATIC",
-                                 NULL,
-                                 WS_CHILD | WS_VISIBLE,
-                                 bounds.left, bounds.top, width, height,
-                                 parent,
-                                 NULL,
-                                 ::GetModuleHandle(NULL),
-                                 NULL);
-
-    if (window_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
+    window_m = implementation::make_display_number(parent, bounds);
 
     if (!alt_text_m.empty())
         implementation::set_control_alt_text(window_m, alt_text_m);
 
-    set_font(window_m, EP_EDITTEXT);
+    set_font_edittext(window_m);
 }
 
 /****************************************************************************************************/
@@ -140,7 +123,7 @@ void display_number_t::display(const model_type& value)
 {
     assert(window_m);
 
-    ::SetWindowTextW(window_m, set_field_text(name_m, value, unit_set_m).c_str());
+	implementation::set_window_title(window_m, set_field_text(name_m, value, unit_set_m));
 }
 
 /****************************************************************************************************/
@@ -196,8 +179,7 @@ void display_number_t::measure_vertical(extents_t& calculated_horizontal, const 
 {
     assert(window_m);
 
-    RECT save_bounds;
-
+    place_data_t save_bounds;
     implementation::get_control_bounds(window_m, save_bounds);
 
     place_data_t static_bounds;
@@ -214,7 +196,7 @@ void display_number_t::measure_vertical(extents_t& calculated_horizontal, const 
 
     std::wstring wtitle;
     to_utf16(title.begin(), title.end(), std::back_inserter(wtitle));
-    RECT out_extent;
+    place_data_t out_extent;
 
 //    metrics::set_theme_name(L"Edit");
     //
@@ -231,37 +213,24 @@ void display_number_t::measure_vertical(extents_t& calculated_horizontal, const 
 
     assert(have_tm);
 
-    const RECT in_extents =
-    {
-        left(static_bounds),
-        top(static_bounds),
-        right(static_bounds),
-        bottom(static_bounds)
-    };
+    const place_data_t in_extents = static_bounds;
 
     bool have_extents = metrics::get_text_extents(uxtheme_type,
         wtitle.c_str(), out_extent, &in_extents);
-    
+
     assert(have_extents);
 
     extents_t::slice_t& vert = calculated_horizontal.vertical();
-    vert.length_m = out_extent.bottom - out_extent.top;
+    vert.length_m = height(out_extent);
     // set the baseline for the text
- 
+
     metrics::set_window(window_m);
 
     if (have_tm)
         // distance from top to baseline
         vert.guide_set_m.push_back(widget_tm.tmHeight - widget_tm.tmDescent);
 
-    place_data_t restore_bounds;
-
-    top(restore_bounds) = save_bounds.top;
-    left(restore_bounds) = save_bounds.left;
-    width(restore_bounds) = save_bounds.right - save_bounds.left;
-    height(restore_bounds) = save_bounds.bottom - save_bounds.top;
-
-    implementation::set_control_bounds(window_m, restore_bounds);
+    implementation::set_control_bounds(window_m, save_bounds);
 }
 
 /****************************************************************************************************/

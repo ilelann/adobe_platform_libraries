@@ -18,7 +18,6 @@
 
 #include <sstream>
 #include <stdexcept>
-#include <tchar.h>
 #include <cassert>
 #include <cstring>
 
@@ -26,12 +25,48 @@
 
 #include <boost/static_assert.hpp>
 
-#include <uxtheme.h>
-//Yuck:
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h>
-//End yuck
+
+#ifdef ADOBE_PLATFORM_WIDGETS_WT
+
+namespace adobe {
+
+/****************************************************************************************************/
+
+namespace metrics {
+
+/****************************************************************************************************/
+
+bool using_styles()
+{
+	return false;
+}
+
+/****************************************************************************************************/
+
+bool set_window(platform_display_type window)
+{
+	return false;
+}
+
+/****************************************************************************************************/
+
+void set_theme_name(const wide_char_t* theme_name)
+{
+}
+
+/****************************************************************************************************/
+
+extents_t measure_checkbox		(platform_display_type window) { return extents_t(); }
+extents_t measure_pushbutton		(platform_display_type window) { return extents_t(); }
+extents_t measure_radiobutton	(platform_display_type window) { return extents_t(); }
+
+/****************************************************************************************************/
+
+}
+}
+
+#else
+
 
 /****************************************************************************************************/
 
@@ -180,6 +215,13 @@ std::wstring& target()
 
 /****************************************************************************************************/
 
+adobe::extents_t measure(HWND window, int platform_placeable_type)
+{
+	return adobe::metrics::measure_text(adobe::implementation::get_window_title(window), window, platform_placeable_type);
+}
+
+/****************************************************************************************************/
+
 } // namespace
 
 /****************************************************************************************************/
@@ -229,7 +271,7 @@ extents_t measure_text(const std::string& text, HWND window, int platform_placea
     // We need the text dimensions to figure out what the width of the widget should
     // be.
     //
-    RECT text_extents;
+    place_data_t text_extents;
     bool have_extents(get_text_extents(platform_placeable_type,
                                        hackery::convert_utf(text.c_str()),
                                        text_extents));
@@ -252,9 +294,19 @@ extents_t measure_text(const std::string& text, HWND window, int platform_placea
 
 /****************************************************************************************************/
 
-extents_t measure(HWND window, int platform_placeable_type)
+extents_t measure_checkbox		(platform_display_type window)
 {
-    return measure_text(implementation::get_window_title(window), window, platform_placeable_type);
+	return measure (window, BP_CHECKBOX);
+}
+
+extents_t measure_pushbutton	(platform_display_type window)
+{
+	return measure (window, BP_PUSHBUTTON);
+}
+
+extents_t measure_radiobutton	(platform_display_type window)
+{
+	return measure (window, BP_RADIOBUTTON);
 }
 
 /****************************************************************************************************/
@@ -262,7 +314,7 @@ extents_t measure(HWND window, int platform_placeable_type)
 extents_t compose_measurements(const SIZE*       widget_size,
                                       const MARGINS*    widget_margins,
                                       const TEXTMETRIC* font_metrics,
-                                      const RECT*       text_extents,
+                                      const place_data_t*       text_extents,
                                       const int*        border)
 {
     extents_t result;
@@ -324,7 +376,7 @@ extents_t compose_measurements(const SIZE*       widget_size,
     }
 
     if (text_extents)
-        result.width() += text_extents->right - text_extents->left;
+        result.width() += width(*text_extents);
 
     if (font_metrics)
         result.height() = std::max<int>(result.height(), font_metrics->tmHeight);
@@ -550,14 +602,13 @@ bool get_font_metrics(int widget_type, TEXTMETRIC& out_metrics)
 
 /****************************************************************************************************/
 
-bool get_text_extents(int widget_type, std::wstring text, RECT& out_extents, const RECT* in_extents)
+bool get_text_extents(int widget_type, std::wstring text, place_data_t& out_extents, const place_data_t* in_extents)
 {
     if (using_styles())
     {
-        RECT kBigExtents = { 0 };
-
-        kBigExtents.right  = 10000;
-        kBigExtents.bottom = 10000;
+        place_data_t kBigExtents;
+        width(kBigExtents) = 10000;
+        height(kBigExtents) = 10000;
     
         if (in_extents == 0)
             in_extents = &kBigExtents;
@@ -581,16 +632,19 @@ bool get_text_extents(int widget_type, std::wstring text, RECT& out_extents, con
         //
         RECT    tmp_extents = { 0 };
         HGDIOBJ original_font = SelectObject(tmp_dc, font);
+		RECT extents_buffer;
+		implementation::to_native (*in_extents, extents_buffer);
         bool    have_extents = S_OK == theme_g->GetThemeTextExtentPtr(theme_g->theme_m,
                                                                       tmp_dc, widget_type,
                                                                       kState, text.c_str(),
                                                                       static_cast<int>(text.size()),
                                                                       DT_CALCRECT + DT_WORDBREAK,
-                                                                      in_extents,
+                                                                      &extents_buffer,
                                                                       &tmp_extents);
 
+
         if (have_extents)
-            out_extents = tmp_extents;
+			implementation::from_native (tmp_extents, out_extents);
         //
         // Clean up, and convert the size to a rect.
         //
@@ -630,10 +684,10 @@ bool get_text_extents(int widget_type, std::wstring text, RECT& out_extents, con
         ::DeleteObject(::SelectObject(tmp_dc, original_font));
         ::ReleaseDC(0, tmp_dc);
 
-        out_extents.left = 0;
-        out_extents.top = 0;
-        out_extents.right = out_size.cx;
-        out_extents.bottom = out_size.cy;
+        left(out_extents) = 0;
+        top(out_extents) = 0;
+        width(out_extents) = out_size.cx;
+        height(out_extents) = out_size.cy;
 
         return hackery::cast<bool>(have_extents);
     }
@@ -756,7 +810,7 @@ bool get_margins(int widget_type, MARGINS& out_margins)
 
 /****************************************************************************************************/
 
-bool get_button_text_margins(int widget_type, RECT& out_margins)
+bool get_button_text_margins(int widget_type, place_data_t& out_margins)
 {
     // in this case, we fall back to the non-theme version if theme is not set.
     if (using_styles() && theme_g->theme_m)
@@ -767,8 +821,8 @@ bool get_button_text_margins(int widget_type, RECT& out_margins)
     {
         if ((target() == L"Button") && (widget_type == BP_CHECKBOX))
         {
-            out_margins.top = 1; out_margins.left = 1;
-            out_margins.bottom = 1; out_margins.right = 1;
+            top(out_margins) = 1; left(out_margins) = 1;
+            height(out_margins) = 0; width(out_margins) = 0;
         }
         else
         {
@@ -804,3 +858,4 @@ ADOBE_ONCE_DEFINITION(windows_theme_metrics_once, init_windows_theme_metrics_onc
 
 /****************************************************************************************************/
 
+#endif

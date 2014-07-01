@@ -6,15 +6,6 @@
 
 /****************************************************************************************************/
 
-
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-#include <commctrl.h>
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <boost/bind.hpp>
 
 #include <adobe/future/widgets/headers/platform_optional_panel.hpp>

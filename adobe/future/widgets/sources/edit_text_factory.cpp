@@ -39,10 +39,6 @@ void create_widget(const dictionary_t&   parameters,
 
     widget = new edit_text_t(block);
 }
-    
-/****************************************************************************************************/
-
-namespace implementation {
 
 /****************************************************************************************************/
 
@@ -58,10 +54,6 @@ widget_node_t make_edit_text(const dictionary_t&     parameters,
         factory.is_container("edit_text"_name),
         factory.layout_attributes("edit_text"_name)); 
 }
-
-/****************************************************************************************************/
-
-} // namespace implementation
 
 /****************************************************************************************************/
 

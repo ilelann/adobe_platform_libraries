@@ -11,6 +11,8 @@
 
 /****************************************************************************************************/
 
+#include <adobe/future/platform_primitives.hpp>
+
 namespace adobe {
 
 /****************************************************************************************************/
@@ -34,12 +36,12 @@ struct edit_number_platform_data_t
 
     void initialize();
 
-    LRESULT label_message(UINT message, WPARAM wParam, LPARAM lParam);
+    label_message_t label_message;
 
     edit_number_t* control_m;
-    HWND           prev_capture_m;
+    platform_display_type           prev_capture_m;
     bool           tracking_m;
-    POINTS         last_point_m;
+    point_t         last_point_m;
 };
 
 /****************************************************************************************************/

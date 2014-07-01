@@ -244,9 +244,9 @@ const widget_factory_t& default_asl_widget_factory()
         default_factory_s.reg(name_checkbox, &make_checkbox);
         default_factory_s.reg(name_control_button, &make_control_button);
         default_factory_s.reg(name_dialog, &make_window, true, window_layout_attributes());
-        default_factory_s.reg(name_display_number, &implementation::make_display_number);
+        default_factory_s.reg(name_display_number, &make_display_number);
         default_factory_s.reg(name_edit_number, &make_edit_number);
-        default_factory_s.reg(name_edit_text, &implementation::make_edit_text);
+        default_factory_s.reg(name_edit_text, &make_edit_text);
         default_factory_s.reg(name_group, &make_group, true, group_layout_attributes());
         default_factory_s.reg(name_image, &implementation::make_image_hack);
         default_factory_s.reg(name_toggle, &make_toggle);

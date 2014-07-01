@@ -17,9 +17,9 @@
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/placeable_concept.hpp>
 
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
+/****************************************************************************************************/
+
+namespace adobe {
 
 /****************************************************************************************************/
 
@@ -27,78 +27,23 @@ namespace {
 
 /****************************************************************************************************/
 
-HBITMAP bitmap_showing()
+native_image_resource_t bitmap_showing()
 {
-    static HBITMAP bitmap_s(0);
-
-    if (bitmap_s == 0)
-    {
-        boost::gil::rgba8_image_t image;
-
-        adobe::image_slurp("windows_reveal_down.tga", image);
-
-        bitmap_s = adobe::to_bitmap(image);
-    }
-
+    static native_image_resource_t bitmap_s = implementation::make_image_resource("windows_reveal_down.tga");
     return bitmap_s;
 }
 
 /****************************************************************************************************/
 
-HBITMAP bitmap_hidden()
+native_image_resource_t bitmap_hidden()
 {
-    static HBITMAP bitmap_s(0);
-
-    if (bitmap_s == 0)
-    {
-        boost::gil::rgba8_image_t image;
-
-        adobe::image_slurp("windows_reveal_up.tga", image);
-
-        bitmap_s = adobe::to_bitmap(image);
-    }
-
+    static native_image_resource_t bitmap_s = implementation::make_image_resource("windows_reveal_up.tga");
     return bitmap_s;
-}
-
-/****************************************************************************************************/
-
-LRESULT CALLBACK reveal_subclass_proc(HWND     window,
-                                      UINT     message,
-                                      WPARAM   wParam,
-                                      LPARAM   lParam,
-                                      UINT_PTR ptr,
-                                      DWORD_PTR /* ref */)
-{
-    adobe::reveal_t& reveal(*reinterpret_cast<adobe::reveal_t*>(ptr));
-
-    if (message == WM_COMMAND && HIWORD(wParam) == STN_CLICKED)
-    {
-        if (reveal.hit_proc_m.empty())
-            return 0;
-
-        // toggle it.
-        adobe::any_regular_t new_value =
-            reveal.current_value_m == reveal.show_value_m ?
-                adobe::any_regular_t(adobe::empty_t()) :
-                reveal.show_value_m;
-
-        reveal.hit_proc_m(new_value);
-
-        return 0;
-    }
-
-    // nevermind.
-    return ::DefSubclassProc(window, message, wParam, lParam);
 }
 
 /****************************************************************************************************/
 
 } // namespace
-
-/****************************************************************************************************/
-
-namespace adobe {
 
 /****************************************************************************************************/
 
@@ -114,33 +59,6 @@ reveal_t::reveal_t(const std::string&			name,
     show_value_m(show_value),
     alt_text_m(alt_text)
 {
-}
-
-
-/****************************************************************************************************/
-
-void reveal_t::initialize(HWND parent)
-{
-    assert(!control_m);
-
-    control_m = ::CreateWindowExW(  WS_EX_COMPOSITED | WS_EX_TRANSPARENT, L"STATIC",
-                                    NULL,
-                                    WS_CHILD | WS_VISIBLE | SS_BITMAP | SS_NOTIFY,
-                                    0, 0, 100, 20,
-                                    parent,
-                                    0,
-                                    ::GetModuleHandle(NULL),
-                                    NULL);
-
-    if (control_m == NULL)
-        ADOBE_THROW_LAST_ERROR;
-
-    set_font(control_m, EP_EDITTEXT); // REVISIT (fbrereto) : a better type?
-
-    ::SetWindowSubclass(control_m, &reveal_subclass_proc, reinterpret_cast<UINT_PTR>(this), 0);
-
-    if (!alt_text_m.empty())
-        implementation::set_control_alt_text(control_m, alt_text_m);
 }
 
 /****************************************************************************************************/
@@ -169,6 +87,22 @@ void reveal_t::measure(extents_t& result)
 
     result.width() += 4 /* gap */ + label_extents.width();
     result.height() = (std::max)(result.height(), label_extents.height());
+}
+
+/****************************************************************************************************/
+
+void reveal_t::on_clicked()
+{
+            if (hit_proc_m.empty())
+            return;
+
+        // toggle it.
+        adobe::any_regular_t new_value =
+            current_value_m == show_value_m ?
+                adobe::any_regular_t(adobe::empty_t()) :
+                show_value_m;
+
+        hit_proc_m(new_value);
 }
 
 /****************************************************************************************************/
@@ -211,9 +145,7 @@ void reveal_t::display(const any_regular_t& new_value)
 
     current_value_m = new_value;
 
-    HBITMAP new_map = current_value_m == show_value_m ? bitmap_showing() : bitmap_hidden();
-
-    ::SendMessage(control_m, STM_SETIMAGE, IMAGE_BITMAP, (LPARAM) new_map);
+    reset_image(control_m, (current_value_m == show_value_m) ? bitmap_showing() : bitmap_hidden(), false);
 }
 
 /****************************************************************************************************/
@@ -234,20 +166,23 @@ platform_display_type insert<reveal_t>(display_t&             display,
                                               platform_display_type& parent,
                                               reveal_t&       element)
 {
-    HWND parent_hwnd(parent);
+    assert(is_null_control(element.control_m));
 
-    element.initialize(parent_hwnd);
+    element.control_m = implementation::make_reveal(parent);
 
-	platform_display_type result(display.insert(parent, element.control_m));
+    set_font_edittext(element.control_m);
 
-	if (element.using_label_m){
-		initialize(element.name_m, parent_hwnd);
-        display.insert(parent, get_display(element.name_m));
-	}
+    implementation::setup_callback_reveal(element);
 
-    return result;
+    if (!element.alt_text_m.empty())
+        implementation::set_control_alt_text(element.control_m, element.alt_text_m);
+
+    if (element.using_label_m){
+        insert(display, parent, element.name_m);
+    }
+
+	return display.insert(parent, element.control_m);
 }
-
 
 /****************************************************************************************************/
 

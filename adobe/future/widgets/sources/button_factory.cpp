@@ -177,10 +177,6 @@ namespace implementation {
 
 button_t* create_button_widget(const dictionary_t&    parameters,
                                const factory_token_t& token,
-                               size_enum_t            size);
-
-button_t* create_button_widget(const dictionary_t&    parameters,
-                               const factory_token_t& token,
                                size_enum_t            size)
 {
     bool               is_cancel(false);

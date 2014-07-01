@@ -1,0 +1,67 @@
+{
+    "folders":
+    [
+        {"path": "adobe"},
+        {"path": "cygwin"},
+        {"path": "macintosh"},
+        {"path": "source"},
+        {"path": "stub"},
+        {"path": "test"},
+        {"path": "tools"},
+        {"path": "windows"},
+    ],
+    "settings":
+    {
+    },
+    "build_systems":
+    [
+        {
+            "name": "bjam clang debug",
+            "env":
+            {
+                "BUILDTOOL": "bjam",
+                "TOOLSET": "clang",
+                "BUILDMODE": "debug"
+            },
+            "working_dir": "${project_path:${folder:${file_path}}}",
+            "shell_cmd": "sh build.sh",
+            "file_regex": "^(.+):([0-9]+):([0-9]+): err(.*)$"
+        },
+        {
+            "name": "bjam clang release",
+            "env":
+            {
+                "BUILDTOOL": "bjam",
+                "TOOLSET": "clang",
+                "BUILDMODE": "release"
+            },
+            "working_dir": "${project_path:${folder:${file_path}}}",
+            "shell_cmd": "sh build.sh",
+            "file_regex": "^(.+):([0-9]+):([0-9]+): err(.*)$"
+        },
+        {
+            "name": "bjam gcc debug",
+            "env":
+            {
+                "BUILDTOOL": "bjam",
+                "TOOLSET": "gcc",
+                "BUILDMODE": "debug"
+            },
+            "working_dir": "${project_path:${folder:${file_path}}}",
+            "shell_cmd": "sh build.sh",
+            "file_regex": "^(.+):([0-9]+):([0-9]+): err(.*)$"
+        },
+        {
+            "name": "bjam gcc release",
+            "env":
+            {
+                "BUILDTOOL": "bjam",
+                "TOOLSET": "gcc",
+                "BUILDMODE": "release"
+            },
+            "working_dir": "${project_path:${folder:${file_path}}}",
+            "shell_cmd": "sh build.sh",
+            "file_regex": "^(.+):([0-9]+):([0-9]+): err(.*)$"
+        },
+    ]
+}

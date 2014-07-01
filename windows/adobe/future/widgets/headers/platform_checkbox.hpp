@@ -13,15 +13,14 @@
 
 #include <adobe/config.hpp>
 
-#define WINDOWS_LEAN_AND_MEAN 1
-#include <windows.h>
-
+#include <adobe/future/platform_primitives.hpp>
 #include <adobe/any_regular.hpp>
 #include <adobe/extents.hpp>
 #include <adobe/layout_attributes.hpp>
 #include <adobe/widget_attributes.hpp>
 
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 
 #include <string>
 
@@ -41,7 +40,7 @@ namespace adobe {
     Further documentation can be found in the \ref asl_widgets_carbon.
 */
 
-struct checkbox_t
+struct checkbox_t : boost::noncopyable
 {
     typedef any_regular_t                      model_type;
     typedef boost::function<void (const model_type&)> setter_type;
@@ -51,6 +50,8 @@ struct checkbox_t
                const any_regular_t& false_value,
                theme_t              theme,
                const std::string&          alt_text);
+
+	void on_clicked();
 
     void measure(extents_t& result);
 
@@ -64,7 +65,7 @@ struct checkbox_t
 
     friend bool operator == (const checkbox_t& x, const checkbox_t& y);
 
-    HWND                 control_m;
+    native_checkbox_t control_m;
     theme_t       theme_m;
     setter_type          hit_proc_m;
     any_regular_t true_value_m;

@@ -47,7 +47,7 @@ public:
             order_set_m(x.order_set_m)
         { }
         
-    behavior_t(behavior_t&& x) = default;
+    behavior_t(behavior_t&&) = default;
     behavior_t& operator=(behavior_t x) {
         single_execution_m = std::move(x.single_execution_m);
         verb_set_m = std::move(x.verb_set_m);

@@ -6,12 +6,6 @@
 
 /****************************************************************************************************/
 
-#include <windows.h>
-
-#include <tmschema.h>
-#define SCHEME_STRINGS 1
-#include <tmschema.h> //Yes, we include this twice -- read the top of the file
-
 #include <adobe/algorithm.hpp>
 #include <adobe/future/widgets/headers/platform_link.hpp>
 #include <adobe/algorithm/copy.hpp>
@@ -59,7 +53,6 @@ void draw_link(const adobe::link_t& link, HDC context)
 
     const long link_line_width(2);
     RECT       bounds = { 0 };
-
     ::GetClientRect(link.control_m, &bounds);
 
     // REVISIT (sparent) : If this were aligned top instead of fill then the hieght _should_ be correct.
@@ -248,7 +241,7 @@ platform_display_type insert<link_t>(display_t&             display,
                                             platform_display_type& parent,
                                             link_t&         element)
 {
-    HWND parent_hwnd(parent);
+    platform_display_type parent_hwnd(parent);
 
     element.control_m = ::CreateWindowExW(WS_EX_COMPOSITED, L"STATIC",
                                           NULL,

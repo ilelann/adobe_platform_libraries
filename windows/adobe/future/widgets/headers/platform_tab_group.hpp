@@ -15,6 +15,7 @@
 
 #include <boost/utility.hpp>
 #include <boost/function.hpp>
+#include <boost/noncopyable.hpp>
 
 #include <adobe/any_regular.hpp>
 #include <adobe/extents.hpp>
@@ -40,11 +41,10 @@ struct tab_group_t : boost::noncopyable
     };
 
     typedef std::vector<tab_t>  tab_set_t;
-    
+
     tab_group_t(const tab_t* first, const tab_t* last, theme_t theme);
 
-
-    void        initialize(HWND parent);
+	void		on_tab_changed (int index);
 
     void        measure(extents_t& result);
     void        place(const place_data_t& place_data);
@@ -56,7 +56,7 @@ struct tab_group_t : boost::noncopyable
     void        set_visible(bool make_visible) { set_control_visible(control_m, make_visible); }
 
 
-    HWND                    control_m;
+    native_tab_group_t control_m;
     theme_t          theme_m;
     tab_group_value_proc_t  value_proc_m;
     tab_set_t               items_m;
@@ -65,7 +65,8 @@ struct tab_group_t : boost::noncopyable
 /****************************************************************************************************/
 
 } //namespace adobe
+
 /****************************************************************************************************/
 
 
-#endif 
+#endif

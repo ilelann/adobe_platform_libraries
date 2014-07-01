@@ -11,11 +11,7 @@
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
 #include <string>
-
-#include <windows.h>
 
 #include <adobe/any_regular.hpp>
 #include <adobe/dictionary.hpp>
