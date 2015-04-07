@@ -9,6 +9,8 @@
 #define ADOBE_WINDOW_FACTORY_HPP
 
 #include <adobe/dictionary.hpp>
+#include <adobe/eve.hpp>
+#include <adobe/layout_attributes.hpp>
 
 /****************************************************************************************************/
 

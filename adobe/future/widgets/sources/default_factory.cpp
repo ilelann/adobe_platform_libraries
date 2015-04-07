@@ -247,14 +247,20 @@ const widget_factory_t& default_asl_widget_factory()
         default_factory_s.reg(name_edit_number, &make_edit_number);
         default_factory_s.reg(name_edit_text, &implementation::make_edit_text);
         default_factory_s.reg(name_group, &make_group, true, group_layout_attributes());
+#ifndef ADOBE_PLATFORM_NO_IMAGE
         default_factory_s.reg(name_image, &implementation::make_image_hack);
+#endif
         default_factory_s.reg(name_toggle, &make_toggle);
         default_factory_s.reg(name_label, &implementation::make_label_hack);
+#ifndef ADOBE_PLATFORM_NO_LINK
         default_factory_s.reg(name_link, &make_link, false, link_layout_attributes());
+#endif
         default_factory_s.reg(name_optional, &make_optional_panel, true, optional_panel_layout_attributes());
         default_factory_s.reg(name_panel, &make_panel, true, panel_layout_attributes());
         default_factory_s.reg(name_popup, &make_popup);
+#ifndef ADOBE_PLATFORM_NO_PRESETS
         default_factory_s.reg(name_preset, &make_presets);
+#endif
         default_factory_s.reg(name_preview, &make_preview);
         default_factory_s.reg(name_progress_bar, &make_progress_bar);
         default_factory_s.reg(name_radio_button, &make_radio_button);

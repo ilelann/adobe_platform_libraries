@@ -15,6 +15,7 @@
 #include <adobe/any_regular.hpp>
 #include <adobe/extents.hpp>
 #include <adobe/layout_attributes.hpp>
+#include <adobe/pb_style.hpp>
 #include <adobe/widget_attributes.hpp>
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 #include <adobe/future/widgets/headers/value_range_format.hpp>
@@ -22,33 +23,6 @@
 /****************************************************************************************************/
 
 namespace adobe {
-
-/****************************************************************************************************/
-
-/*!
-\relates progress_bar_t
-
-\note
-    Could probably be refactored to specify the intention for the
-    progress bar instead of the end-look-and-feel of the progress bar.
-*/
-enum pb_style_t
-{
-    /// Typical progress bar intention; repeatedly updated to reflect
-    /// the progress of an ongoing task
-    pb_style_progress_bar_s,
-
-    /// Updated once (typically) to reflect an amount a certain value
-    /// relates to another value. For instance, the relevance of a
-    /// search result to the search criterion
-    pb_style_relevance_bar_s,
-
-    /// "Barber"-style animation of a bar; repeatedly animated to
-    /// reflect the fact that while we don't know how long the task
-    /// will take to complete, we can tell you that the app isn't
-    /// frozen, it's just thinking hard
-    pb_style_indeterminate_bar_s
-};
 
 /****************************************************************************************************/
 

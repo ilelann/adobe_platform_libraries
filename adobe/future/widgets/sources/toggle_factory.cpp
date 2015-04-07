@@ -28,18 +28,26 @@ void create_widget(const dictionary_t&  parameters,
 {
     std::string          alt_text;
     any_regular_t        value_on(true);
-    toggle_t::image_type image_on;
-    toggle_t::image_type image_off;
-    toggle_t::image_type image_disabled;
     theme_t              theme(implementation::size_to_theme(size));
 
     get_value(parameters, key_alt_text).cast(alt_text);
     get_value(parameters, key_value_on).cast(value_on);
-    get_value(parameters, key_image_on).cast(image_on);
-    get_value(parameters, key_image_off).cast(image_off);
-    get_value(parameters, key_image_disabled).cast(image_disabled);
 
-    widget = new toggle_t(alt_text, value_on, image_on, image_off, image_disabled, theme);
+#ifdef ADOBE_PLATFORM_TOGGLE_NAME
+    std::string label;
+    get_value(parameters, key_name).cast(label);
+    widget = new toggle_t{label, alt_text, value_on, theme};
+#else
+        toggle_t::image_type image_on;
+        toggle_t::image_type image_off;
+        toggle_t::image_type image_disabled;
+
+        get_value(parameters, key_image_on).cast(image_on);
+        get_value(parameters, key_image_off).cast(image_off);
+        get_value(parameters, key_image_disabled).cast(image_disabled);
+
+        widget = new toggle_t(alt_text, value_on, image_on, image_off, image_disabled, theme);
+#endif
 }
 
 /*************************************************************************************************/

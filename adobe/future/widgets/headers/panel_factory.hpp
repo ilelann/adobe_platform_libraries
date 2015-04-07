@@ -10,6 +10,8 @@
 
 #include <adobe/dictionary.hpp>
 
+#include <adobe/layout_attributes.hpp>
+
 /****************************************************************************************************/
 
 namespace adobe {

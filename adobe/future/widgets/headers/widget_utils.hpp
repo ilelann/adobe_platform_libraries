@@ -12,6 +12,7 @@
 
 #include <adobe/future/widgets/headers/platform_widget_utils.hpp>
 #include <adobe/extents.hpp>
+#include <adobe/name.hpp>
 
 #include <adobe/future/platform_primitives.hpp>
 

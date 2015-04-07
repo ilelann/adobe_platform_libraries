@@ -9,6 +9,7 @@
 
 #include <adobe/future/widgets/headers/factory.hpp>
 #include <adobe/future/widgets/headers/display_number_factory.hpp>
+#include <adobe/future/widgets/headers/number_unit.hpp>
 #include <adobe/future/widgets/headers/widget_factory.hpp>
 #include <adobe/future/widgets/headers/widget_factory_registry.hpp>
 #include <adobe/future/widgets/headers/widget_tokens.hpp>

@@ -8,6 +8,10 @@
 #ifndef ADOBE_WIDGET_PRESETS_COMMON_HPP
 #define ADOBE_WIDGET_PRESETS_COMMON_HPP
 
+#include <adobe/array_fwd.hpp>
+
+#include <boost/filesystem/path.hpp>
+
 /****************************************************************************************************/
 
 namespace adobe {
