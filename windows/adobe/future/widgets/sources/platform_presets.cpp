@@ -21,9 +21,11 @@
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/future/windows_graphic_utils.hpp>
 
+#include <boost/bind.hpp>	
 #include <boost/filesystem/path.hpp>
 #include <boost/filesystem/operations.hpp>
 #include <boost/filesystem/fstream.hpp>
+#include <boost/gil/image.hpp>
 
 /****************************************************************************************************/
 
@@ -114,8 +116,9 @@ LRESULT CALLBACK presets_subclass_proc(HWND     window,
         adobe::name_t add_preset(adobe::implementation::localization_value(preset, adobe::key_preset_menu_item_add_preset, "Add Preset...").c_str());
         adobe::name_t delete_preset(adobe::implementation::localization_value(preset, adobe::key_preset_menu_item_delete_preset, "Delete Preset...").c_str());
 #ifndef NDEBUG
-        adobe::static_name_t separator("-");
-        adobe::static_name_t resave_presets("(debug) Re-save Presets To File");
+		using namespace adobe::literals;
+        adobe::static_name_t separator = "-"_name;
+        adobe::static_name_t resave_presets = "(debug) Re-save Presets To File"_name;
 #endif
 
         adobe::name_t options[] =
@@ -322,13 +325,13 @@ namespace implementation {
 
 boost::filesystem::path preset_directory(const presets_t& control)
 {
-    char winpath[MAX_PATH] = { 0 };
+    TCHAR winpath[MAX_PATH];
 
-    if (SHGetFolderPathA(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, (LPSTR)&winpath) != 0)
+    if (!SUCCEEDED(SHGetFolderPath(NULL, CSIDL_APPDATA, NULL, SHGFP_TYPE_CURRENT, winpath)))
         return boost::filesystem::path();
 
     // convert the preferences folder to a filesystem path
-    boost::filesystem::path pref_folder_path(winpath, boost::filesystem::native);
+    boost::filesystem::path pref_folder_path(winpath);
     boost::filesystem::path corp_folder_path(pref_folder_path /
              implementation::localization_value(control, key_preset_top_folder_name, "Adobe"));
 

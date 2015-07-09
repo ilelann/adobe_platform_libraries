@@ -17,7 +17,7 @@
 
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/layout_attributes.hpp>
-#include <adobe/name_fwd.hpp>
+#include <adobe/name.hpp>
 #include <adobe/widget_attributes.hpp>
 
 #include <boost/filesystem/path.hpp>

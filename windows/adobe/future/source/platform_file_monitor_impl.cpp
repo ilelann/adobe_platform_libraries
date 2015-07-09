@@ -165,7 +165,7 @@ void file_monitor_platform_data_t::connect()
 
     last_write_m = boost::filesystem::last_write_time(path_m);
 
-    std::string change_handle_path(path_m.branch_path().native_directory_string());
+    std::string change_handle_path(path_m.branch_path().string());
 
     change_handle_m = FindFirstChangeNotificationA(change_handle_path.c_str(),
                                                    FALSE,

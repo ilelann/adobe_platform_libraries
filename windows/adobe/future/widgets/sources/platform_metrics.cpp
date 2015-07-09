@@ -32,9 +32,6 @@
 #include <tmschema.h>
 //End yuck
 
-/****************************************************************************************************/
-
-ADOBE_ONCE_DECLARATION(windows_theme_metrics_once)
 
 /****************************************************************************************************/
 
@@ -347,7 +344,8 @@ extents_t compose_measurements(const SIZE*       widget_size,
 
 bool using_styles()
 {
-    ADOBE_ONCE_INSTANCE(windows_theme_metrics_once);
+    static adobe::once_flag flag;
+    adobe::call_once(flag, &init_windows_theme_metrics_once);
 
     return theme_g->loaded_m && hackery::cast<bool>(theme_g->IsThemeActivePtr());
 }
@@ -798,8 +796,3 @@ void draw_parent_background(HWND window, HDC dc)
 } // namespace adobe
 
 /*************************************************************************************************/
-
-ADOBE_ONCE_DEFINITION(windows_theme_metrics_once, init_windows_theme_metrics_once)
-
-/****************************************************************************************************/
-

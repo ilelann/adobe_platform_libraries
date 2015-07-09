@@ -27,7 +27,7 @@ namespace adobe {
 
 void progress_bar_t::display(const any_regular_t& value)
 {
-    value_m = value.type_info() == type_info<empty_t>() ? 0 : value.cast<double>();
+    value_m = empty(value) ? 0 : value.cast<double>();
     
     std::size_t new_position(format_m.find(value));
 

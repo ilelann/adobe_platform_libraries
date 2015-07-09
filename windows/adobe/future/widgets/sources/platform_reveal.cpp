@@ -16,6 +16,8 @@
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/placeable_concept.hpp>
 
+#include <boost/gil/image.hpp>
+
 #include <tmschema.h>
 #define SCHEME_STRINGS 1
 #include <tmschema.h> //Yes, we include this twice -- read the top of the file

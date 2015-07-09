@@ -27,7 +27,7 @@ adobe_cursor_t make_cursor(const char* cursor_path, float hot_spot_x, float hot_
 {
     boost::gil::rgba8_image_t cursor_image;
 
-    adobe::image_slurp(boost::filesystem::path(cursor_path, boost::filesystem::native), cursor_image);
+    adobe::image_slurp(boost::filesystem::path(cursor_path), cursor_image);
 
     HBITMAP cursor_bitmap(adobe::to_bitmap(cursor_image));
     HCURSOR result(adobe::to_cursor(cursor_bitmap, static_cast<int>(hot_spot_x), static_cast<int>(hot_spot_y)));

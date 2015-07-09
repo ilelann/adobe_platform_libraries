@@ -19,34 +19,21 @@ namespace {
 #if ADOBE_PLATFORM_WIN
 std::string get_locale_tidbit(LCTYPE type)
 {
-    LCID current_locale(::GetUserDefaultLCID());
+    auto current_locale = LOCALE_NAME_USER_DEFAULT;
 
     // first find out how much buffer space we'll need
-    int length(::GetLocaleInfoA(current_locale, type, NULL, 0));
+    auto length = ::GetLocaleInfoEx(current_locale, type, NULL, 0);
 
-    std::vector<char> buffer(static_cast<std::size_t>(length));
+    std::string buffer;
+    buffer.reserve(static_cast<std::size_t>(length));
 
     // now do the actual information grab
-    if (::GetLocaleInfoA(current_locale, type, &buffer[0], length) == 0)
-        throw std::runtime_error("GetLocaleInfoA");
+    if (::GetLocaleInfoEx(current_locale, type, &buffer[0], length) == 0)
+        throw std::runtime_error("GetLocaleInfoEx");
 
-    return std::string(&buffer[0]);
+    return buffer;
 }
 
-/****************************************************************************************************/
-
-std::string current_locale_iso_tag()
-{
-    std::string country_name(get_locale_tidbit(LOCALE_SISO3166CTRYNAME));
-    std::string language_name(get_locale_tidbit(LOCALE_SISO639LANGNAME));
-
-    if (country_name.empty())
-        return language_name;
-    else if (language_name.empty())
-        return country_name;
-
-    return language_name << "_" << country_name;
-}
 #endif
 /****************************************************************************************************/
 
@@ -69,7 +56,7 @@ void do_locale_check()
 
     static std::string old_locale_ident;
 
-    std::string new_locale_ident(get_locale_tidbit(LOCALE_SENGLANGUAGE) << "_" << get_locale_tidbit(LOCALE_SENGCOUNTRY));
+    std::string new_locale_ident(get_locale_tidbit(LOCALE_SENGLANGUAGE) + "_" + get_locale_tidbit(LOCALE_SENGCOUNTRY));
 
     if (old_locale_ident == new_locale_ident)
         return;

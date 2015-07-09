@@ -21,6 +21,8 @@
 #include <adobe/memory.hpp>
 #include <adobe/unicode.hpp>
 
+#include <boost/bind.hpp>
+
 #include <string>
 #include <cassert>
 

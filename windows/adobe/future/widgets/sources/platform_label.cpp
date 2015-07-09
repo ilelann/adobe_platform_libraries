@@ -126,7 +126,7 @@ void measure(label_t& value, extents_t& result)
     }
     
     std::wstring wname;
-    to_utf16(value.name_m.begin(), value.name_m.end(), back_inserter(wname));
+    copy_utf<wchar_t>(value.name_m.begin(), value.name_m.end(), back_inserter(wname));
     
     bool have_extents = metrics::get_text_extents(uxtheme_type,
         wname.c_str(), text_extents, &in_extents);
@@ -168,7 +168,7 @@ void measure_vertical(label_t& value, extents_t& calculated_horizontal,
     std::string title(implementation::get_window_title(value.window_m));
 
     std::wstring wtitle;
-    to_utf16(title.begin(), title.end(), std::back_inserter(wtitle));
+    copy_utf<wchar_t>(title.begin(), title.end(), std::back_inserter(wtitle));
     RECT out_extent;
 
 //    metrics::set_theme_name(L"Edit");

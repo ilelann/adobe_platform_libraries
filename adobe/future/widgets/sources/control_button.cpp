@@ -12,6 +12,8 @@
 #include <adobe/future/widgets/headers/control_button.hpp>
 #include <adobe/future/widgets/headers/button_helper.hpp>
 
+#include <boost/bind.hpp>
+
 #include <iomanip>
 #include <limits>
 

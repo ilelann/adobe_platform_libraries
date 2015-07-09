@@ -208,11 +208,10 @@ void display_number_t::measure_vertical(extents_t& calculated_horizontal, const 
 
     implementation::set_control_bounds(window_m, static_bounds);
 
-	HDC hdc(::GetWindowDC(window_m));
     std::string title(implementation::get_window_title(window_m));
 
     std::wstring wtitle;
-    to_utf16(title.begin(), title.end(), std::back_inserter(wtitle));
+	copy_utf<wchar_t>(title.begin(), title.end(), std::back_inserter(wtitle));
     RECT out_extent;
 
 //    metrics::set_theme_name(L"Edit");

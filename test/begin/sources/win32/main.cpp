@@ -82,7 +82,7 @@ void clip_quotes(std::string& str)
 
 void open_document(adobe::application_t* app, const std::string& filename)
 {
-    boost::filesystem::path     file( filename, boost::filesystem::native );
+    boost::filesystem::path     file( filename);
     std::string                 extension( boost::filesystem::extension( file ) );
 
     if ( extension == ".eve")
@@ -233,9 +233,9 @@ LRESULT CALLBACK main_window_proc(HWND window, UINT message, WPARAM wParam, LPAR
             std::string temp(&buffer[0]);
 
             if (temp.rfind(".adm") == temp.size() - 4)
-                app->set_adam_file(boost::filesystem::path(temp.c_str(), boost::filesystem::native));
+                app->set_adam_file(boost::filesystem::path(temp.c_str()));
             else if (temp.rfind(".eve") == temp.size() - 4)
-                app->set_eve_file(boost::filesystem::path(temp.c_str(), boost::filesystem::native));
+                app->set_eve_file(boost::filesystem::path(temp.c_str()));
         }
 
         ::DragFinish(drop);
@@ -404,7 +404,7 @@ bool os_initialize( application_t* app )
     //
     // Now we need to get a directory from the command line name.
     //
-    boost::filesystem::path directory( directory_string, boost::filesystem::native );
+    boost::filesystem::path directory( directory_string );
 
     //
     // Tell the application...

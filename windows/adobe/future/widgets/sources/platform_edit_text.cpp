@@ -20,6 +20,8 @@
 #include <adobe/future/windows_cast.hpp>
 #include <adobe/controller_concept.hpp>
 
+#include <boost/bind.hpp>
+
 const int gap=4;
 
 /*************************************************************************************************/

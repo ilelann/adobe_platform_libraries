@@ -21,6 +21,8 @@
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 #include <adobe/future/widgets/headers/platform_metrics.hpp>
 
+#include <boost/gil/image.hpp>
+
 
 
 /****************************************************************************************************/

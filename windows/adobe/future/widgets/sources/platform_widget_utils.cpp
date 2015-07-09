@@ -172,13 +172,13 @@ boost::filesystem::path to_path(const std::vector<TCHAR>& path_buffer)
 
     cpath_buffer.reserve(std::distance(&path_buffer[0], end));
 
-    adobe::to_utf8(&path_buffer[0], end, std::back_inserter(cpath_buffer));
+    adobe::copy_utf<char>(&path_buffer[0], end, std::back_inserter(cpath_buffer));
 
     cpath_buffer.push_back(0);
 
     // finally, construct the new path from the converted string buffer and return
 
-    return boost::filesystem::path(&cpath_buffer[0], boost::filesystem::native);
+    return boost::filesystem::path(&cpath_buffer[0]);
 }
 
 /****************************************************************************************************/
@@ -264,7 +264,7 @@ void set_control_alt_text(HWND control, const std::string& alt_text)
     std::vector<TCHAR> text_buffer(alt_text.size() * 2, 0);
 
     /* Set up the text for filling in the tooltip structure below */
-    to_utf16(&alt_text[0], &alt_text[0] + alt_text.size(), &text_buffer[0]);
+    copy_utf<TCHAR>(&alt_text[0], &alt_text[0] + alt_text.size(), &text_buffer[0]);
 
     /* Basic initialization of the tooltip structure parameters */
     tooltip_info.cbSize = sizeof(TOOLINFO);
@@ -329,7 +329,7 @@ void set_control_bounds(HWND control, const place_data_t& place_data)
 void throw_last_error_exception(const char* /* file */, long /* line */)
 {
     DWORD error(::GetLastError());
-    char  the_message[2048] = { 0 };
+    char the_message[2048] = { 0 };
 
     ::FormatMessageA(
         FORMAT_MESSAGE_FROM_SYSTEM |
@@ -341,7 +341,7 @@ void throw_last_error_exception(const char* /* file */, long /* line */)
         sizeof(the_message),
         NULL);
 
-    char* actual_error = the_message[0] ? the_message : "Unknown Error.";
+    const char* actual_error = the_message[0] ? the_message : "Unknown Error.";
 
     ::MessageBoxA(0, actual_error, "Error Message From Windows", MB_ICONEXCLAMATION | MB_APPLMODAL | MB_OK);
 

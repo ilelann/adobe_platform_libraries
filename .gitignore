@@ -5,3 +5,6 @@ boost*.tar.gz
 build/
 built_artifacts/
 *.xccheckout
+*.rsp
+*.obj
+*.o

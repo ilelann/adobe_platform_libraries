@@ -56,8 +56,8 @@ void init_presets_once()
 
 void presets_once()
 {
-    static once_flag flag;
-    call_once(flag, &init_presets_once);
+    static adobe::once_flag flag;
+    adobe::call_once(flag, &init_presets_once);
 }
 
 /**************************************************************************************************/

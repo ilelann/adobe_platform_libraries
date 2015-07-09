@@ -29,18 +29,18 @@ typedef boost::signals2::signal<void (const adobe::dictionary_t&)> locale_signal
 
 void init_locale_once()
 {
-    static adobe::periodical_t periodical(&adobe::implementation::do_locale_check, 1000);
+/*    static adobe::periodical_t periodical(&adobe::implementation::do_locale_check, 1000);
 
     // get the current locale information as part of the initialization
-    adobe::implementation::do_locale_check();
+    adobe::implementation::do_locale_check();*/
 }
 
 /**************************************************************************************************/
 
 void locale_once()
 {
-    static once_flag flag;
-    call_once(flag, &init_locale_once);
+    static adobe::once_flag flag;
+    adobe::call_once(flag, &init_locale_once);
 }
 
 /**************************************************************************************************/
