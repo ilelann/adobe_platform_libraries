@@ -174,7 +174,7 @@ void vm_lookup_t::attach_to(virtual_machine_t& vm)
 {
     vm.set_dictionary_function_lookup(boost::bind(&vm_lookup_t::dproc, boost::cref(*this), _1, _2));
     vm.set_array_function_lookup(boost::bind(&vm_lookup_t::aproc, boost::cref(*this), _1, _2));
-    vm.set_variable_lookup(boost::ref(variable_lookup_m));
+    vm.set_variable_lookup(variable_lookup_m);
 }
 
 /**************************************************************************************************/

@@ -200,7 +200,7 @@ private:
     storage_type                           storage_m;
     view_set_t                             view_set_m;
     controller_set_t                       controller_set_m;
-    auto_ptr<typename poly_sequence_model<T>::type> poly_m;
+    std::unique_ptr<typename poly_sequence_model<T>::type> poly_m;
 
     // ADOBE_NO_DOCUMENTATION
     #endif

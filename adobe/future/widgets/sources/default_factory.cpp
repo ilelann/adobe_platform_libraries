@@ -294,7 +294,7 @@ namespace adobe {
 
 /*************************************************************************************************/
 
-auto_ptr<eve_client_holder> make_view(name_t                                 file_path,
+std::unique_ptr<eve_client_holder> make_view(name_t                                 file_path,
                                       const line_position_t::getline_proc_t& getline_proc,
                                       std::istream&                          stream,
                                       sheet_t&                               sheet,
@@ -304,7 +304,7 @@ auto_ptr<eve_client_holder> make_view(name_t                                 fil
                                       const widget_factory_proc_t&           proc,
                                       platform_display_type                  display_root)
 {
-    adobe::auto_ptr<eve_client_holder>  result(new eve_client_holder(root_behavior));
+    std::unique_ptr<eve_client_holder>  result(new eve_client_holder(root_behavior));
     factory_token_t                     token(get_main_display(),
                                               sheet,
                                               *(result.get()),

@@ -100,7 +100,7 @@ class application_t
     adobe::window_server_t*                   _holder_m;          ///< Contains Eve instance, and all instanciated widgets.
     adobe::sheet_t                            _editor_sheet_m;    ///< The sheet for the editor window.
     adobe::behavior_t                         _editor_behavior_m; ///< Root relayout behavior for the editor palette.
-    adobe::auto_ptr<adobe::eve_client_holder> _editor_holder_m;   ///< The client_holder for the editor window.
+    std::unique_ptr<adobe::eve_client_holder> _editor_holder_m;   ///< The client_holder for the editor window.
     size_enum_t                               _dialog_size_m;     ///< The size of dialog to create.
     bool                                      _initialized;       ///< Are we initialized yet?
 
