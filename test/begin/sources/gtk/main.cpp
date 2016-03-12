@@ -235,7 +235,10 @@ bool os_initialize( application_t* app )
 
 void os_mainloop(adobe::application_t& )
 {
-gtk_main();
+    while(gtk_main_iteration())
+    {
+        adobe::general_deferred_proc_queue()();
+    }
 }
 
 /****************************************************************************************************/

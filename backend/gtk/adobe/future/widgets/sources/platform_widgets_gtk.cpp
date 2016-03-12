@@ -139,7 +139,9 @@ namespace adobe {
         /****************************************************************************************************/
 
         static void gtk_button_callback(GtkButton *, gpointer user_data) {
-            on_button_clicked(as<button<gtk>>(user_data), modifiers_all_s);
+            // TODO ilelann
+            // get modifiers state here
+            on_button_clicked(as<button<gtk>>(user_data), modifiers_none_s);
         }
 
         gtk::widget_handle
