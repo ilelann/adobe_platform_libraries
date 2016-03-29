@@ -5,6 +5,8 @@
 
 #include <adobe/future/widgets/headers/platform_label.hpp>
 
+#include <adobe/any_regular.hpp>
+
 namespace adobe { namespace implementation {
 
         template <typename Backend>

@@ -10,7 +10,8 @@
 
 /*************************************************************************************************/
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
+#include <adobe/any_regular.hpp>
 #include <adobe/name.hpp>
 #include <adobe/layout_attributes.hpp>
 

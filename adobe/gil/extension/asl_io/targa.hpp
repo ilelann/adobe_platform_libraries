@@ -15,7 +15,7 @@
 #include <boost/gil/algorithm.hpp>
 #include <boost/gil/extension/dynamic_image/any_image.hpp>
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/future/endian.hpp>
 
 #include <boost/cstdint.hpp>

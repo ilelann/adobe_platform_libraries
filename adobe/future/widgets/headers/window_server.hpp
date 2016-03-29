@@ -14,7 +14,7 @@
 
 #include <adobe/adam.hpp>
 #include <adobe/any_regular.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/eve.hpp>
 #include <adobe/future/assemblage.hpp>
 #include <adobe/future/debounce.hpp>

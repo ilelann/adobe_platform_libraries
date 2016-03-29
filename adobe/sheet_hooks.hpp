@@ -12,7 +12,7 @@
 
 #include <adobe/adam.hpp>
 #include <adobe/widget_proxies.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 
 /*************************************************************************************************/
 

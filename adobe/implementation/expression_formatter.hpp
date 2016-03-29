@@ -16,7 +16,7 @@
 
 #include <adobe/any_regular.hpp>
 #include <adobe/array.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/implementation/token.hpp>
 #include <adobe/iomanip.hpp>
 #include <adobe/static_table.hpp>

@@ -8,7 +8,7 @@
 #ifndef ADOBE_SLIDER_FACTORY_HPP
 #define ADOBE_SLIDER_FACTORY_HPP
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 
 /****************************************************************************************************/
 

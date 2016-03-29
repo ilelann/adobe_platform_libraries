@@ -14,7 +14,7 @@
 #include <string>
 
 #include <adobe/any_regular.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 
 /****************************************************************************************************/
 

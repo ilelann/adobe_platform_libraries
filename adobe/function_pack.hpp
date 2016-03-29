@@ -22,7 +22,7 @@
 #include <adobe/any_regular.hpp>
 #include <adobe/array.hpp>
 #include <adobe/closed_hash.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/empty.hpp>
 #include <adobe/function_traits.hpp>
 #include <adobe/string.hpp>

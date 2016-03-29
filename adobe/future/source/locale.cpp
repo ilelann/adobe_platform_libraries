@@ -10,6 +10,7 @@
 #include <adobe/future/platform_locale_data.hpp>
 
 #include <adobe/future/periodical.hpp>
+#include <adobe/dictionary.hpp>
 #include <adobe/name.hpp>
 
 #include <mutex>

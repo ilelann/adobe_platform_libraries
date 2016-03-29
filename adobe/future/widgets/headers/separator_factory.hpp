@@ -8,7 +8,7 @@
 #ifndef ADOBE_SEPARATOR_FACTORY_HPP
 #define ADOBE_SEPARATOR_FACTORY_HPP
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/layout_attributes.hpp>
 
 /****************************************************************************************************/

@@ -14,7 +14,7 @@
 
 #include <adobe/array.hpp>
 #include <adobe/name.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/future/assemblage.hpp>
 #include <adobe/future/widgets/headers/factory.hpp>
 #include <adobe/future/widgets/headers/widget_tokens.hpp>

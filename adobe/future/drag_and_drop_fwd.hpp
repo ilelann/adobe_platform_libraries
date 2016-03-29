@@ -19,7 +19,7 @@
 #include <boost/function.hpp>
 
 #include <adobe/any_regular.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/future/poly_drag_and_drop_converter.hpp>
 
 /**************************************************************************************************/

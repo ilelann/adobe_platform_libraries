@@ -8,7 +8,7 @@
 #ifndef ADOBE_IMAGE_FACTORY_HPP
 #define ADOBE_IMAGE_FACTORY_HPP
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 
 /****************************************************************************************************/
 

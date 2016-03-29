@@ -61,10 +61,6 @@
 
 #include <boost/optional.hpp>
 #include <boost/bind.hpp>
-#include <boost/filesystem/path.hpp>
-#include <boost/filesystem/operations.hpp>
-#include <boost/filesystem/convenience.hpp>
-#include <boost/filesystem/fstream.hpp>
 
 #include <cassert>
 #include <fstream>

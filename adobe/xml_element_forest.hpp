@@ -17,7 +17,7 @@
 #include <string>
 
 #include <adobe/algorithm/find.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/forest.hpp>
 #include <adobe/iterator.hpp>
 #include <adobe/string.hpp>

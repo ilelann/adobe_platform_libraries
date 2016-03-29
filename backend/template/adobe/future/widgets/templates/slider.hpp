@@ -2,8 +2,12 @@
 
 #include <adobe/future/widgets/templates/widget_base.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
+#include <adobe/future/widgets/headers/value_range_format.hpp>
 #include <adobe/future/widgets/headers/slider_helper.hpp>
 #include <adobe/widget_attributes.hpp>
+
+#include <functional>
+#include <string>
 
 namespace adobe { namespace implementation {
 

@@ -8,6 +8,7 @@
 #include <adobe/dictionary_set.hpp>
 
 #include <adobe/algorithm/set.hpp>
+#include <adobe/dictionary.hpp>
 #include <adobe/table_index.hpp>
 
 /*************************************************************************************************/

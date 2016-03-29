@@ -8,7 +8,7 @@
 #ifndef ADOBE_BUTTON_FACTORY_HPP
 #define ADOBE_BUTTON_FACTORY_HPP
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 
 /*
     Hi. My name is Joe, and I work in a but-ton fac-to-ry!

@@ -4,7 +4,7 @@
 #include <adobe/future/widgets/headers/display.hpp>
 
 #include <adobe/controller_concept.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/view_concept.hpp>
 
 #include <boost/gil/image.hpp>

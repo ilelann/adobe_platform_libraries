@@ -9,7 +9,7 @@
 #define ADOBE_CONTROL_BUTTON_HPP
 
 #include <adobe/array.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/any_regular.hpp>
 #include <adobe/future/widgets/headers/platform_button.hpp>
 

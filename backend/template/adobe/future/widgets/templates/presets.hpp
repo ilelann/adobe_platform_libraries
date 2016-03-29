@@ -6,7 +6,7 @@
 #include <adobe/future/widgets/headers/platform_popup.hpp>
 
 #include <adobe/array.hpp>
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 
 #include <functional>
 

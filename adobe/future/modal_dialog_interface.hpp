@@ -5,7 +5,7 @@
 */
 /****************************************************************************************************/
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
 #include <adobe/array.hpp>
 
 #include <boost/function.hpp>

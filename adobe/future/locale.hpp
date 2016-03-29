@@ -12,7 +12,8 @@
 
 #include <adobe/config.hpp>
 
-#include <adobe/dictionary.hpp>
+#include <adobe/dictionary_fwd.hpp>
+#include <adobe/name.hpp>
 
 #include <boost/function.hpp>
 #include <boost/signals2.hpp>

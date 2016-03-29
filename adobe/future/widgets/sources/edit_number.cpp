@@ -10,6 +10,7 @@
 #include <adobe/config.hpp>
 
 #include <adobe/algorithm/find.hpp>
+#include <adobe/dictionary.hpp>
 #include <adobe/poly_placeable.hpp>
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 #include <adobe/future/image_slurp.hpp>
