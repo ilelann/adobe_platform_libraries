@@ -2,6 +2,7 @@
 
 #include <adobe/future/widgets/templates/platform_widgets.hpp>
 
+#include <adobe/any_regular_fwd.hpp>
 #include <adobe/widget_attributes.hpp>
 #include <adobe/future/widgets/headers/slider_helper.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
@@ -132,6 +133,7 @@ namespace implementation {
 
         static bool is_null(widget_handle widget);
         static void nullify(widget_handle& widget);
+        static void nullify_when_destroyed(widget_handle* element);
 
         static void destroy_window (widget_handle widget);
 

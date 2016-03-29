@@ -96,6 +96,16 @@ namespace adobe {
             widget = nullptr;
         }
 
+        void
+        gtk::nullify_when_destroyed(widget_handle* widget)
+        {
+            g_signal_connect (
+                        G_OBJECT(*widget),
+                        "destroy",
+                        G_CALLBACK (gtk_widget_destroyed),
+                        widget);
+        }
+
         void gtk::destroy_window(widget_handle widget) {
             gtk_widget_destroy(GTK_WIDGET(widget));
         }

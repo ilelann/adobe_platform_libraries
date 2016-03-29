@@ -55,6 +55,8 @@ struct window : widget_base<Backend> {
                                                      element.name_m,
                                                      element.attributes_m & (window_attributes_resizeable_s | window_attributes_live_resizeable_s));
 
+            Backend::nullify_when_destroyed(&(element.control_m));
+
             return Backend::post(display, parent, element);
         }
 }}
