@@ -25,7 +25,7 @@ struct progress_bar : widget_base<Backend> {
     void display(const any_regular_t& value)
     {
         Backend::progress_bar_set_value(this->control_m,
-                                        format_m.find(value.cast<double>()), format_m.size());
+                                        format_m.find(value), format_m.size());
     }
 
     void set_min_value(long min_value) {}

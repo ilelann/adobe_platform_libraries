@@ -144,7 +144,7 @@ namespace adobe {
         Target& as (gpointer user_data)
         {
             return *(static_cast<Target*>(user_data));
-        };
+        }
 
         /****************************************************************************************************/
 

@@ -42,7 +42,7 @@ any_regular_t number_formatter_t::parse<any_regular_t>(const std::string& str, a
         double d {};
         std::istringstream iss{str};
         iss >> d;
-        return d;
+        return any_regular_t {d};
     }
     else return any_regular_t(std::string("formatter_format_number error"));
 }

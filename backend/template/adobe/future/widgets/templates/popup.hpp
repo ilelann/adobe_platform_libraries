@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 #include <adobe/future/widgets/templates/widget_base.hpp>
 #include <adobe/future/widgets/headers/display.hpp>
 
@@ -63,18 +65,11 @@ namespace adobe {
             label <Backend> name_m;
             std::string alt_text_m;
             std::string custom_item_name_m;
-            //long static_baseline_m;
-            //long static_height_m;
-            //long popup_baseline_m;
-            //long popup_height_m;
             bool using_label_m;
             setter_type value_proc_m;
             extended_setter_type extended_value_proc_m;
             menu_item_set_t menu_items_m;
             theme_t theme_m;
-            model_type last_m;
-            bool type_2_debounce_m;
-            bool custom_m;
 #endif
         };
 

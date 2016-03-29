@@ -34,6 +34,7 @@ struct display_t;
 namespace implementation {
 
     struct gtk {
+
         /****************************************************************************************************/
 
         using widget_handle = GtkWidget*;
