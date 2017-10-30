@@ -38,7 +38,7 @@ public:
     typedef behavior_t*             behavior_token_t;
 
     explicit behavior_t(bool single_execution);
-//    ~behavior_t() { delete behavior_set_m; }
+    
     behavior_t(const behavior_t& x)
         :   single_execution_m(x.single_execution_m),
             verb_set_m(x.verb_set_m),
@@ -83,7 +83,7 @@ private:
 
     bool                            single_execution_m;
     verb_set_t                      verb_set_m;
-    behavior_set_t*                 behavior_set_m;
+    std::unique_ptr<behavior_set_t> behavior_set_m;
     order_set_t                     order_set_m;
 };
 

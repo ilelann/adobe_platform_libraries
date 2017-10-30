@@ -57,7 +57,7 @@ struct control_button_t
 
     ///@}
 
-    adobe::auto_ptr<button_t> button_m;
+    std::unique_ptr<button_t> button_m;
 
 private:
     void button_fire(const any_regular_t&, const dictionary_t&);

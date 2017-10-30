@@ -643,7 +643,7 @@ private:
     }
 
     proc_type                                       proc_m;
-    auto_ptr<typename poly_sequence_model<T>::type> poly_m;
+    std::unique_ptr<typename poly_sequence_model<T>::type> poly_m;
 };
 
 /******************************************************************************/

@@ -13,6 +13,8 @@
     #define WINDOWS_LEAN_AND_MEAN 1
 
     #include <windows.h>
+#elif ADOBE_PLATFORM_GTK
+    #include <gtk/gtk.h>
 #endif
 
 #include <iostream>
@@ -178,6 +180,17 @@ bool os_init()
 
 /****************************************************************************************************/
 
+
+#ifdef ADOBE_PLATFORM_GTK
+bool os_init(int* argc, char***argv)
+{
+    gtk_init(argc, argv);
+    return true;
+}
+#endif
+
+/****************************************************************************************************/
+
 }// namespace
 
 /****************************************************************************************************/
@@ -189,14 +202,19 @@ int main(int argc, char** argv)
 #endif
 try
 {
-    if (!os_init()) throw std::runtime_error("OS initialization failed");
+    if (!os_init(&argc, &argv)) throw std::runtime_error("OS initialization failed");
 
-#if ADOBE_PLATFORM_MAC
+#if ADOBE_PLATFORM_MAC || ADOBE_PLATFORM_GTK
     if (argc > 2)
     {
         std::string db_name(argv[2]);
+#if ADOBE_PLATFORM_MAC
         boost::filesystem::path eve_path((db_name + ".eve").c_str(), boost::filesystem::native);
         boost::filesystem::path adam_path((db_name + ".adm").c_str(), boost::filesystem::native);
+#else
+        boost::filesystem::path eve_path(db_name + ".eve");
+        boost::filesystem::path adam_path(db_name + ".adm");
+#endif
 
         boost::filesystem::ifstream eve_stream(eve_path);
         boost::filesystem::ifstream adam_stream(adam_path);

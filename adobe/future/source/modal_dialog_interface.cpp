@@ -27,6 +27,8 @@
 #elif ADOBE_PLATFORM_MAC
 	#include <adobe/macintosh_memory.hpp>
     #include <adobe/future/macintosh_events.hpp>
+#elif ADOBE_PLATFORM_GTK
+    #include <gtk/gtk.h>
 #endif
 
 /****************************************************************************************************/
@@ -349,7 +351,10 @@ dialog_result_t modal_dialog_t::go(std::istream& layout, std::istream& sheet)
             end_dialog();
         }
 
+#elif ADOBE_PLATFORM_GTK
+        gtk_main();
 #endif
+
 
         result_m.display_state_m = view_m->layout_sheet_m.contributing();
 

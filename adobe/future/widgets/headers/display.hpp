@@ -22,18 +22,30 @@ namespace adobe {
 
 struct display_t
 {
-    display_t() :
-        root_m(platform_display_type())
-    { }
+    display_t()
+        : root_m{platform_display_type{}}
+    {
+    }
 
     void set_root(platform_display_type element)
-        { root_m = element; }
+    {
+// root display is not used for GTK backend
+// but some common code calls root method
+// so the best I found was to to let it null for now
+#ifndef ADOBE_PLATFORM_GTK
+        root_m = element;
+#endif
+    }
 
     platform_display_type root()
-        { return root_m; }
+    {
+        return root_m;
+    }
 
+#ifndef ADOBE_PLATFORM_GTK
     template <typename DisplayElement>
     platform_display_type insert(platform_display_type& parent, const DisplayElement& element);
+#endif
 
 private:
     platform_display_type root_m;

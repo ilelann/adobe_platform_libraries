@@ -1,44 +1,33 @@
 /*
-    Copyright 2013 Adobe
+    Copyright 2016 Ivan Le Lann
     Distributed under the Boost Software License, Version 1.0.
     (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
 */
 /****************************************************************************************************/
 
-#ifndef ADOBE_LOCALE_IMPL_HPP
-#define ADOBE_LOCALE_IMPL_HPP
+#include <adobe/future/cursor.hpp>
 
 /****************************************************************************************************/
 
-#define WINDOWS_LEAN_AND_MEAN 1
-
-#include <windows.h>
-
-#include <string>
-
-/****************************************************************************************************/
-
-namespace adobe {
+adobe_cursor_t make_cursor(const char* cursor_path, float hot_spot_x, float hot_spot_y)
+{
+    return nullptr;
+}
 
 /****************************************************************************************************/
 
-namespace implementation {
+void push_cursor(adobe_cursor_t cursor) {}
 
 /****************************************************************************************************/
 
-void do_locale_check();
+adobe_cursor_t pop_cursor() { return nullptr; }
 
 /****************************************************************************************************/
 
-} // namespace implementation
+void reset_cursor() {}
 
 /****************************************************************************************************/
 
-} // namespace adobe
-
-/****************************************************************************************************/
-
-// ADOBE_LOCALE_IMPL_HPP
-#endif
+void delete_cursor(adobe_cursor_t cursor) {}
 
 /****************************************************************************************************/

@@ -186,21 +186,13 @@ enum size_enum_t
 //
 struct factory_token_t
 {
-    factory_token_t(display_t&                display,
-                    sheet_t&                  sheet,
+    factory_token_t(sheet_t&                  sheet,
                     eve_client_holder& client_holder,
                     button_notifier_t  notifier) :
-        display_m(display),
         sheet_m(sheet),
         client_holder_m(client_holder),
         notifier_m(notifier)
     { }
-
-    //
-    /// Created widgets should be made with respect to this display, and inserted
-    /// into the given parent by this display.
-    //
-    display_t& display_m;
 
     //
     /// The current Adam sheet -- this contains all of the cells which widgets might
@@ -351,7 +343,7 @@ inline widget_factory_proc_t default_widget_factory_proc()
 
 /*************************************************************************************************/
 
-adobe::auto_ptr<eve_client_holder> make_view(name_t                                 file_name,
+std::unique_ptr<eve_client_holder> make_view(name_t                                 file_name,
                                              const line_position_t::getline_proc_t& getline_proc,
                                              std::istream&                          stream,
                                              sheet_t&                               sheet,

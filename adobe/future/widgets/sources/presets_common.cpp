@@ -12,6 +12,7 @@
 
 #include <sstream>
 #include <string>
+#include <mutex>
 
 #include <adobe/future/widgets/headers/widget_utils.hpp>
 
@@ -56,8 +57,8 @@ void init_presets_once()
 
 void presets_once()
 {
-    static once_flag flag;
-    call_once(flag, &init_presets_once);
+    static std::once_flag flag;
+    std::call_once(flag, &init_presets_once);
 }
 
 /**************************************************************************************************/

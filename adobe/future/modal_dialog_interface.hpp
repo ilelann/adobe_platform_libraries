@@ -161,7 +161,7 @@ class modal_dialog_t
 {
 public:
     typedef any_regular_t               model_type;
-    typedef auto_ptr<eve_client_holder> auto_view_t;
+    typedef std::unique_ptr<eve_client_holder> auto_view_t;
 
     modal_dialog_t();
 

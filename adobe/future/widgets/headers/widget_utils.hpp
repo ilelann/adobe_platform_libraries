@@ -1,4 +1,4 @@
- /*
+/*
     Copyright 2013 Adobe
     Distributed under the Boost Software License, Version 1.0.
     (See accompanying file LICENSE_1_0.txt or copy at http://www.boost.org/LICENSE_1_0.txt)
@@ -12,6 +12,7 @@
 
 #include <adobe/future/widgets/headers/platform_widget_utils.hpp>
 #include <adobe/extents.hpp>
+#include <adobe/name.hpp>
 
 #include <adobe/future/platform_primitives.hpp>
 
@@ -122,6 +123,10 @@ bool pick_save_path(boost::filesystem::path& path, platform_display_type dialog_
 
 /****************************************************************************************************/
 
+// ilelann
+// I don't see any usage of get_top_level_window anywhere
+// tempting to delete it but I only hide it for GTK in first step
+#ifndef ADOBE_PLATFORM_GTK
 /*!
     \ingroup apl_widgets
 
@@ -134,6 +139,7 @@ bool pick_save_path(boost::filesystem::path& path, platform_display_type dialog_
     \return the parent of the display element passed
 */
 platform_display_type get_top_level_window(platform_display_type display_element);
+#endif
 
 /****************************************************************************************************/
 
@@ -145,7 +151,7 @@ platform_display_type get_top_level_window(platform_display_type display_element
 inline void system_beep()
 {
 #if ADOBE_PLATFORM_MAC && !defined(__LP64__)
-    // TODO: Beep
+// TODO: Beep
 #elif ADOBE_PLATFORM_WIN
     ::MessageBeep(0xFFFFFFFF);
 #endif

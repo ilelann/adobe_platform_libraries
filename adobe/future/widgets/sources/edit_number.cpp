@@ -291,7 +291,7 @@ void edit_number_t::display_unit(const edit_number_unit_subwidget_t::model_type&
     refresh_enabled_state(&controller_set_m[base_unit_index]);
 
     // check for edit_text focus and do the right thing.
-    if (implementation::is_focused(edit_text_m.control_m) && 
+    if (implementation::is_focused(edit_text_m) &&
         controller_set_m[base_unit_index].enabled_m)
     {
         // reset the value of the new unit to the scale of the new value

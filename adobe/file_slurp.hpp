@@ -111,8 +111,8 @@ void file_slurp<T>::reslurp()
 
     while (true)
     {
-        in.read(&contents_m[size_m], static_cast<std::streamsize>(buffer_size));
-
+        in.read(&contents_m[size_m], static_cast<std::streamsize>(buffer_size - size_m));
+        
         std::size_t count(static_cast<std::size_t>(in.gcount()));
 
         size_m += count;

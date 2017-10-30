@@ -54,7 +54,7 @@ namespace adobe {
 
 behavior_t::behavior_t(bool single_execution) :
     single_execution_m(single_execution),
-    behavior_set_m(new behavior_set_t)
+    behavior_set_m(std::make_unique<behavior_set_t>())
 { }
 
 /**************************************************************************************************/

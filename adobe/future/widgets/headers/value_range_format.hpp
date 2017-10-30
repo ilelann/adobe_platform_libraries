@@ -68,7 +68,12 @@ public:
 
     std::size_t find(const any_regular_t& source) const
     {
-        double result = adobe::round(double(interval_count_m) * (source.cast<double>() - first_m) / (last_m - first_m));
+        return find(source.cast<double>());
+    }
+
+    std::size_t find(const double& value) const
+    {
+        double result = adobe::round(double(interval_count_m) * (value - first_m) / (last_m - first_m));
 
         return static_cast<std::size_t>(std::min<double>(std::max<double>(0, result), double(interval_count_m)));
     }

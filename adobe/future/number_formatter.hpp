@@ -84,7 +84,10 @@ struct number_formatter_t
 private:
     void monitor_locale(const dictionary_t&);
 
+    // TODO gtk locale monitoring
+#ifndef ADOBE_PLATFORM_GTK
     number_formatter_platform_data_t data_m;
+#endif
     boost::signals2::connection      connection_m;
 };
 

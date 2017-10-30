@@ -9,6 +9,7 @@
 #define ADOBE_SEPARATOR_FACTORY_HPP
 
 #include <adobe/dictionary.hpp>
+#include <adobe/layout_attributes.hpp>
 
 /****************************************************************************************************/
 

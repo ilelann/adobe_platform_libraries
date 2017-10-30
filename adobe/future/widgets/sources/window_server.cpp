@@ -154,12 +154,19 @@ void window_server_t::dispatch_window_action(iterator window, name_t action, con
     {
         sheet_m.set((*window)->contributing_m);
         sheet_m.update();
-
+#ifdef ADOBE_PLATFORM_GTK
+        this->erase(window);
+#else
         general_deferred_proc_queue().insert(boost::bind(&window_server_t::erase, boost::ref(*this), window));
+#endif
     }
     else if (action == "ok"_name)
     {
+#ifdef ADOBE_PLATFORM_GTK
+        this->erase(window);
+#else
         general_deferred_proc_queue().insert(boost::bind(&window_server_t::erase, boost::ref(*this), window));
+#endif
     }
 
     if (fallback_m)

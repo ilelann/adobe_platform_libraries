@@ -34,13 +34,8 @@ public:
                           std::size_t              millisecond_delay = 200) :
         is_blocked_m(false),
         proc_m(proc),
-        data_m(periodical_platform_data_t::fire_proc_t(), millisecond_delay)
+        data_m(boost::bind(&periodical_t::fire, boost::ref(*this)), millisecond_delay)
     {
-        // NOTE (fbrereto) : MSVC 8 doesn't allow "this" to be used
-        //                   in a constructor initializer, so we
-        //                   assign it here.
-
-        data_m.fire_m = boost::bind(&periodical_t::fire, boost::ref(*this));
     }
 
     ~periodical_t()
